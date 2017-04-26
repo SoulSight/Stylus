@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX y: <http://mpii.de/yago/resource/>
+
+SELECT ?gn ?fn
+WHERE { 
+	?p y:hasGivenName ?gn . 
+	?p y:hasFamilyName ?fn . 
+	?p rdf:type <http://mpii.de/yago/resource/wordnet_scientist_110560637> . 
+	?p y:wasBornIn ?city .
+	?p y:hasAcademicAdvisor ?a . 
+	?a y:wasBornIn ?city2 . 
+	?city y:isLocatedIn <http://mpii.de/yago/resource/Switzerland> . 
+	?city2 y:isLocatedIn <http://mpii.de/yago/resource/Germany> . 
+}

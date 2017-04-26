@@ -1,0 +1,12 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX y: <http://mpii.de/yago/resource/>
+
+select distinct ?c1 ?c2 ?label
+where { 
+	?c1 rdf:type <http://mpii.de/yago/resource/wordnet_village_108672738> .
+	?c1 rdfs:label ?label .
+	?c2 rdf:type <http://mpii.de/yago/resource/wordnet_site_108651247> .
+	?c2 rdfs:label ?label .
+	?c1 y:linksTo ?c2 .
+}

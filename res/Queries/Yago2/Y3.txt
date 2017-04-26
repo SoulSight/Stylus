@@ -1,0 +1,13 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX y: <http://mpii.de/yago/resource/>
+
+select distinct ?a1 ?a2
+where { 
+	?a1 y:livesIn ?c1 .
+	?a1 y:actedIn ?movie .  
+	?a2 y:livesIn ?c2 . 
+	?a2 y:actedIn ?movie . 
+	?c1 y:isLocatedIn <http://mpii.de/yago/resource/United_States> . 
+	?c2 y:isLocatedIn <http://mpii.de/yago/resource/Europe> . 
+}

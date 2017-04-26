@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.props" Condition="Exists('..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E8C8E52B-5B9D-4008-A669-AA69C0479395}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Stylus</RootNamespace>
+    <AssemblyName>Stylus</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>e1a30cd5</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="dotNetRDF, Version=1.0.12.0, Culture=neutral, PublicKeyToken=6055ffe4c97cc780, processorArchitecture=MSIL">
+      <HintPath>..\packages\dotNetRDF.1.0.12\lib\net40\dotNetRDF.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Trinity.Core, Version=1.0.8482.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\GraphEngine.Core.1.0.8482\lib\Trinity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VDS.Common, Version=1.6.4.0, Culture=neutral, PublicKeyToken=ab5f4eb908061bf0, processorArchitecture=MSIL">
+      <HintPath>..\packages\VDS.Common.1.6.4\lib\net40-client\VDS.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Distributed\SparqlDataProxy.cs" />
+    <Compile Include="Distributed\SparqlDataServer.cs" />
+    <Compile Include="Loading\DataScanner.cs" />
+    <Compile Include="Loading\LoadingEntity.cs" />
+    <Compile Include="Query\TwigSolutions.cs" />
+    <Compile Include="Util\TwigUtil.cs" />
+    <Compile Include="Util\XDictionary.cs" />
+    <Compile Include="Parsing\QueryGraph.cs" />
+    <Compile Include="Parsing\SimpleParser.cs" />
+    <Compile Include="Parsing\SparqlParser.cs" />
+    <Compile Include="Preprocess\LineGrouper.cs" />
+    <Compile Include="Preprocess\LineMerger.cs" />
+    <Compile Include="Preprocess\Preprocessor.cs" />
+    <Compile Include="Preprocess\XPreprocessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\AbstractQueryWorker.cs" />
+    <Compile Include="Query\Binding.cs" />
+    <Compile Include="Query\IQueryWorker.cs" />
+    <Compile Include="Query\LinearQueryWorker.cs" />
+    <Compile Include="Query\ParallelQueryWorker.cs" />
+    <Compile Include="Query\QuerySolutions.cs" />
+    <Compile Include="Query\Statistics.cs" />
+    <Compile Include="Query\XParallelQueryWorker.cs" />
+    <Compile Include="Query\xTwig.cs" />
+    <Compile Include="StylusSchema.cs" />
+    <Compile Include="Storage\IStorage.cs" />
+    <Compile Include="Storage\RAMStorage.cs" />
+    <Compile Include="StylusConfig.cs" />
+    <Compile Include="Util\ClusterUtil.cs" />
+    <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\ListUtil.cs" />
+    <Compile Include="Util\NTripleUtil.cs" />
+    <Compile Include="Util\TidUtil.cs" />
+    <Compile Include="Util\Vocab.cs" />
+    <Compile Include="Util\XHashSet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stylus.DataModel\Stylus.DataModel.tproj">
+      <Project>{1ec1aad7-3dd0-4118-89f7-09b69c05fe8c}</Project>
+      <Name>Stylus.DataModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.props'))" />
+    <Error Condition="!Exists('..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.targets'))" />
+  </Target>
+  <Import Project="..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.targets" Condition="Exists('..\packages\GraphEngine.Core.1.0.8482\build\GraphEngine.Core.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,257 @@
+struct IdList
+{
+	List<long> Ids;	
+}
+
+struct BindingMessage
+{
+	string Name;
+	List<ushort> Types;
+	List<long> Values;	
+}
+
+struct BindingMessages
+{
+	int	QueryId;
+	int StepIndex;
+	List<BindingMessage> Elements;
+}
+
+struct SparqlQuery
+{
+	string Content;	
+	string Settings;
+}
+
+struct TwigQuery
+{
+	string Root;
+	List<string> Leaves;
+	List<string> SelectLeavePreds;
+	List<string> SelectLeaveVars;
+	List<BindingMessage> Bindings;
+}
+
+struct TwigAnswer
+{
+	long Root;	
+	List<List<long>> LeaveValues;
+}
+
+struct TwigAnswers
+{
+	long ActualSize;
+	long TwigCount;		
+	List<TwigAnswer> Elements;
+}
+
+struct QueryAnswers
+{
+	List<TwigAnswers> Results;
+}
+
+struct QueryResults
+{
+	List<string> Variables;	
+	List<List<long>> Records;	
+}
+
+struct PreparedQuery
+{
+	int QueryId;	
+	List<TwigQuery> TwigQueries;	
+}
+
+struct QueryInfo
+{
+	int	QueryId;
+}
+
+struct QueryStepInfo
+{
+	int	QueryId;
+	int StepIndex;
+}
+
+struct LoadFileInfo
+{
+	string FilePath;	
+	string SchemaDir;	
+	bool UnfoldIsA;
+}
+
+// Statistics Info
+struct TidPidStatInfo
+{
+	long Pid;
+	double Sel;	
+}
+
+struct TidStatInfo
+{
+	ushort Tid;	
+	List<TidPidStatInfo> TidStat;
+}
+
+struct LocalStatInfo
+{
+	List<TidStatInfo> LocalStat;
+}
+
+protocol AggregateStatInfo
+{
+	Type:Syn;
+	Request:void;
+	Response:LocalStatInfo;	
+}
+
+protocol LoadFile
+{
+	Type:Syn;	
+	Request: LoadFileInfo;
+	Response: void;
+}
+
+protocol LoadEncodedFile
+{
+	Type:Syn;	
+	Request: LoadFileInfo;
+	Response: void;
+}
+
+protocol LoadStorage
+{
+	Type:Syn;	
+	Request: void;
+	Response: void;
+}
+
+protocol ExecuteQuery
+{
+	Type:Syn;	
+	Request: SparqlQuery;
+	Response: QueryResults;
+}
+
+protocol IssueQuery
+{
+	Type:Syn;	
+	Request: PreparedQuery;
+	Response: QueryInfo;
+}
+
+protocol ExecuteQueryStep
+{
+	Type:Syn;	
+	Request: QueryStepInfo;
+	Response: void;	
+}
+
+protocol SyncStep
+{
+	Type:Syn;	
+	Request: QueryStepInfo;
+	Response: void;	
+}
+
+protocol AggregateQueryAnswers
+{
+	Type:Syn;	
+	Request: QueryInfo;
+	Response: QueryAnswers;	
+}
+
+protocol SyncBindings
+{
+	Type:Syn;	
+	Request: BindingMessages;
+	Response: void;	
+}
+
+protocol FinishSyncStep
+{
+	Type:Syn;
+	Request:QueryStepInfo;
+	Response:void;	
+}
+
+protocol BroadcastSuffixQueryAnswers
+{
+	Type:Syn;
+	Request:QueryInfo;
+	Response:void;	
+}
+
+struct QueryInfoAnswers
+{
+	QueryInfo QInfo;
+	QueryAnswers QAnswers;
+}
+
+protocol AcceptSuffixQueryAnswers
+{
+	Type:Syn;
+	Request:QueryInfoAnswers;
+	Response:void;	
+}
+
+protocol JoinQueryAnswers
+{
+	Type:Syn;
+	Request:QueryInfo;
+	Response:void;	
+}
+
+protocol AggregateQueryResults
+{
+	Type:Syn;
+	Request:QueryInfo;
+	Response:QueryResults;	
+}
+
+protocol AggregateIdList
+{
+	Type:Syn;
+	Request:QueryInfo;
+	Response:IdList;	
+}
+
+protocol FreeQuery
+{
+	Type:Asyn;
+	Request:QueryInfo;
+	Response:void;	
+}
+
+server SparqlDataProxy
+{
+	protocol LoadFile;
+	protocol LoadEncodedFile;
+	protocol LoadStorage;
+	
+	protocol ExecuteQuery;	
+}
+
+server SparqlDataServer
+{
+	protocol LoadFile;
+	protocol LoadEncodedFile;
+	protocol LoadStorage;
+		
+	protocol IssueQuery;
+	protocol ExecuteQueryStep;
+	protocol SyncStep;	
+	protocol SyncBindings;	
+	protocol FinishSyncStep;
+	protocol AggregateQueryAnswers;
+	protocol FreeQuery;
+
+	protocol BroadcastSuffixQueryAnswers;
+	protocol AcceptSuffixQueryAnswers;
+	protocol JoinQueryAnswers;
+	protocol AggregateQueryResults;
+
+	protocol AggregateIdList;
+	
+	protocol AggregateStatInfo;
+}

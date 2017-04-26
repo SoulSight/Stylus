@@ -1,0 +1,61 @@
+/// xUDT & Entity
+
+struct xUDT
+{
+	ushort Tid;
+	List<long> Ps;	
+}
+
+struct InvertPred
+{
+	long P;
+	long P_Inv;	
+}
+
+struct SyntheticPred
+{
+	long SynP;
+	long P;	
+	long O;	
+}
+
+cell struct xUDTSchema
+{
+	List<xUDT> xUDTs;
+	List<InvertPred> InvertPreds;
+	List<SyntheticPred> SyntheticPreds;
+}
+
+cell struct xEntity
+{
+	ushort Tid;
+	List<int> Offsets;
+	List<long> ObjVals;
+}
+
+/// Generic Entity 1
+struct Property
+{
+	long Name;
+	List<long> Values;
+}
+
+cell struct GenericPropEntity
+{
+	ushort Tid;	
+	List<Property> Props;
+}
+
+/// Generic Entity 2
+struct PO
+{
+	long P;
+	long O;	
+}
+
+cell struct GenericPOEntity
+{
+	ushort Tid;	
+	List<PO> POs;
+}
+

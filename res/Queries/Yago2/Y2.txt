@@ -1,0 +1,17 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX y: <http://mpii.de/yago/resource/>
+
+select distinct ?a
+where { 
+	?a y:livesIn ?city .
+	?a rdf:type <http://mpii.de/yago/resource/wordnet_actor_109765278> .
+	?a y:actedIn ?m1 .
+	?a y:directed ?m2 . 
+	?city y:isLocatedIn ?s .
+	?s y:isLocatedIn <http://mpii.de/yago/resource/United_States> . 
+	?m1 rdf:type <http://mpii.de/yago/resource/wordnet_movie_106613686> .
+	?m1 y:isLocatedIn <http://mpii.de/yago/resource/Italy> . 
+	?m2 rdf:type <http://mpii.de/yago/resource/wordnet_movie_106613686> .
+	?m2 y:isLocatedIn <http://mpii.de/yago/resource/Canada> . 
+}

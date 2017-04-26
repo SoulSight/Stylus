@@ -1,0 +1,12 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX y: <http://mpii.de/yago/resource/>
+
+select ?n1 ?n2 
+where { 
+	?p1 y:hasGivenName ?n1 .
+	?p1 y:wasBornIn ?city . 
+	?p1 y:isMarriedTo ?p2. 
+	?p2 y:hasGivenName ?n2 . 
+	?p2 y:wasBornIn ?city. 
+}
