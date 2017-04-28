@@ -73,6 +73,7 @@ namespace Stylus.Storage
             Log.WriteLine(LogLevel.Info, "Reloading...");
             /// Initialize the xUDT indices
             InitializeIndices();
+            Log.WriteLine(LogLevel.Info, "Loaded.");
         }
 
         private void InitializeIndices() 

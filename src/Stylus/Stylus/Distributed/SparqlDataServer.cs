@@ -175,16 +175,20 @@ namespace Stylus.Distributed
             TwigQuery tq = this.query_dict[query_id][step_index];
             var worker = this.query_works[query_id];
 
+            Dictionary<string, Binding> local_bindings = new Dictionary<string, Binding>();
+
             var list_bm = new List<BindingMessage>();
             if (!(worker.GetBinding(tq.Root) is TidBinding))
             {
                 list_bm.Add(new BindingMessage(tq.Root, new List<ushort>(), worker.EnumerateBinding(tq.Root).ToList()));
+                local_bindings.Add(tq.Root, worker.GetBinding(tq.Root));
             }
             foreach (var leaf in tq.SelectLeaveVars)
             {
                 if (!(worker.GetBinding(leaf) is TidBinding))
                 {
                     list_bm.Add(new BindingMessage(leaf, new List<ushort>(), worker.EnumerateBinding(leaf).ToList()));
+                    local_bindings.Add(leaf, worker.GetBinding(leaf));
                 }
             }
 
@@ -192,7 +196,17 @@ namespace Stylus.Distributed
 
             Parallel.For(0, TrinityConfig.Servers.Count, i =>
             {
-                Global.CloudStorage.SyncBindingsToSparqlDataServer(i, msg);
+                if (i == Global.MyServerID)
+                {
+                    lock (this.sync_bindings)
+                    {
+                        this.sync_bindings[query_id] = local_bindings;
+                    }
+                }
+                else
+                {
+                    Global.CloudStorage.SyncBindingsToSparqlDataServer(i, msg);
+                }
             });
         }
 
@@ -225,7 +239,14 @@ namespace Stylus.Distributed
 
                 lock (this.sync_bindings[query_id])
                 {
-                    this.sync_bindings[query_id][binding.Name].AddEids((List<long>)binding.Values);
+                    if (this.sync_bindings[query_id][binding.Name] is TidBinding)
+                    {
+                        this.sync_bindings[query_id][binding.Name] = new EidSetBinding(this.sync_bindings[query_id][binding.Name].FilterEids((List<long>)binding.Values));
+                    }
+                    else
+                    {
+                        this.sync_bindings[query_id][binding.Name].AddEids((List<long>)binding.Values);
+                    }
                 }
             });
         }
