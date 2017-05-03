@@ -33,16 +33,7 @@ namespace Stylus.Loading
 
         private static void LoadIdMappingFromFile()
         {
-            string id_map_file = StylusConfig.GetStoreMetaRootDir() + StylusConfig.EidMapFilename;
-            foreach (var line in File.ReadLines(id_map_file))
-            {
-                string[] splits = line.Split('\t');
-                if (splits.Length < 2)
-                {
-                    Log.WriteLine(LogLevel.Warning, "Ignore line: " + line);
-                }
-                literal_to_eid.Add(splits[0], long.Parse(splits[1]));
-            }
+            IOUtil.LoadEidMapFile((literal, eid) => literal_to_eid.Add(literal, eid));
         }
 
         private static ushort GetTid(List<long> pids)
@@ -133,11 +124,12 @@ namespace Stylus.Loading
             yield return new LoadingEntity() { Literal = pre, POs = pos };
         }
 
-        public static void AssignAllEids(string rdfFilename, char sep)
+        public static void AssignEids(string rdfFilename, char sep)
         {
+            LoadSchemaFromFile();
+
             // scan rdf file once =>: eid_id_dict
-            string eidMapFilename = StylusConfig.GetStoreMetaRootDir() + StylusConfig.EidMapFilename;
-            foreach (var entity in EnumerateEntity(rdfFilename, sep))
+            var kvps = EnumerateEntity(rdfFilename, sep).Select(entity =>
             {
                 ushort tid = GetTid(entity.POs.Keys.ToList());
                 if (!tid_cur_pos.ContainsKey(tid))
@@ -147,52 +139,9 @@ namespace Stylus.Loading
                 long cur_id_pos = tid_cur_pos[tid];
                 tid_cur_pos[tid] += 1;
                 long id = TidUtil.CloneMaskTid(cur_id_pos, tid);
-                if (literal_to_eid.ContainsKey(entity.Literal))
-                {
-                    Log.WriteLine(LogLevel.Warning, "Already existing literal: " + entity.Literal);
-                }
-                else
-                {
-                    literal_to_eid.Add(entity.Literal, id);
-                }
-            }
-
-            using (StreamWriter writer = new StreamWriter(eidMapFilename))
-            {
-                foreach (var kvp in literal_to_eid)
-                {
-                    writer.WriteLine(kvp.Key + "\t" + kvp.Value);
-                }
-            }
-        }
-
-        public static void AssignEids(string rdfFilename, char sep)
-        {
-            LoadSchemaFromFile();
-
-            // scan rdf file once =>: eid_id_dict
-            string eidMapFilename = StylusConfig.GetStoreMetaRootDir() + StylusConfig.EidMapFilename;
-            using (StreamWriter writer = new StreamWriter(eidMapFilename))
-            {
-                long cnt = 0;
-                foreach (var entity in EnumerateEntity(rdfFilename, sep))
-                {
-                    if (++cnt % 1000000 == 0)
-                    {
-                        Console.WriteLine("AssignEids: " + cnt);
-                    }
-                    ushort tid = GetTid(entity.POs.Keys.ToList());
-                    if (!tid_cur_pos.ContainsKey(tid))
-                    {
-                        tid_cur_pos.Add(tid, 1);
-                    }
-                    long cur_id_pos = tid_cur_pos[tid];
-                    tid_cur_pos[tid] += 1;
-                    long id = TidUtil.CloneMaskTid(cur_id_pos, tid);
-                    writer.WriteLine(entity.Literal + "\t" + id);
-                }
-                Console.WriteLine("AssignEids: " + cnt);
-            }
+                return new KeyValuePair<string, long>(entity.Literal, id);
+            });
+            IOUtil.SaveEidMapFile(kvps);
         }
 
         private static void LoadEntity(LoadingEntity entity)
@@ -295,27 +244,10 @@ namespace Stylus.Loading
             LoadSchemaFromFile();
 
             // scan rdf file once =>: eid_id_dict
-            string eidMapFilename = StylusConfig.GetStoreMetaRootDir() + StylusConfig.EidMapFilename;
+            literal_to_eid = new XDictionary<string, long>();
+            IOUtil.LoadEidMapFile((literal, eid) => literal_to_eid.Add(literal, eid));
 
-            Console.WriteLine("Loading from " + eidMapFilename);
             long cnt = 0;
-            foreach (var line in File.ReadLines(eidMapFilename))
-            {
-                if (++cnt % 1000000 == 0)
-                {
-                    Console.WriteLine("Loading Eid Mapping: " + cnt);
-                }
-                string[] splits = line.Split('\t');
-                if (splits.Length < 2)
-                {
-                    Console.WriteLine(line);
-                    continue;
-                }
-                literal_to_eid.Add(splits[0], long.Parse(splits[1]));
-            }
-            Console.WriteLine("Loading Eid Mapping: " + cnt);
-
-            cnt = 0;
             using (StreamWriter writer = new StreamWriter(encodedFilename))
             {
                 foreach (var line in File.ReadLines(rdfFilename))

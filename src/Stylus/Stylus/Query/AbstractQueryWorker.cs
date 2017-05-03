@@ -47,18 +47,7 @@ namespace Stylus.Query
         {
             // LoadLiteralToEid
             this.LiteralToId = new Dictionary<string, long>();
-            var eidMapFilename = StylusConfig.GetStoreMetaRootDir() + StylusConfig.EidMapFilename;
-            foreach (var line in File.ReadLines(eidMapFilename))
-            {
-                string[] splits = line.Split('\t');
-                if (splits.Length < 2)
-                {
-                    continue;
-                }
-                string literal = splits[0];
-                long eid = long.Parse(splits[1]);
-                this.LiteralToId.Add(literal, eid);
-            }
+            IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
         }
 
         public List<xTwigHead> Plan(QueryGraph qg) 
