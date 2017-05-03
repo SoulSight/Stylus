@@ -1,4 +1,4 @@
-Stylus
+Stylus: A Strongly-Typed Store for Serving Massive RDF Data
+
 =====
 
-A strongly-typed store for serving massive RDF data.
