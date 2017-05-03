@@ -54,9 +54,9 @@ namespace Stylus.Console
                 System.Console.ForegroundColor = ConsoleColor.DarkRed;
 
                 System.Console.WriteLine();
-                System.Console.WriteLine("=> StorageRoot: " + TrinityConfig.StorageRoot);
-                System.Console.WriteLine("=> MetadataRoot: " + StylusConfig.GetStoreMetaRootDir());
-                System.Console.WriteLine("=> Unfold_IsA: " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
+                System.Console.WriteLine("=> " + StylusConsoleTerm.StorageRootName + ": " + TrinityConfig.StorageRoot);
+                System.Console.WriteLine("=> " + StylusConsoleTerm.MetadataRootName + ": " + StylusConfig.GetStoreMetaRootDir());
+                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
                 System.Console.WriteLine();
                 
                 System.Console.ForegroundColor = backup_foreground_color;
@@ -116,13 +116,17 @@ namespace Stylus.Console
             info += " Command list: \n";
             info += " +---------------------------\n";
             info += "  [-] set <key> <value>\n";
-            info += "        <key> = {meta_root, storage_root, unfold_isa}\n"; //, max_xudt, sep
-            info += "        <value> = <dir_path> for {meta_root, storage_root};\n"; //
-            info += "                  <bool> for unfold_isa}\n"; //
+            info += "        <key> = {" + StylusConsoleTerm.MetadataRootName + ", "
+                + StylusConsoleTerm.StorageRootName + ", " + StylusConsoleTerm.CombineIsAName + "}\n"; //, max_xudt, sep
+            info += "        <value> = <dir_path> for {" + StylusConsoleTerm.MetadataRootName + ", "
+                + StylusConsoleTerm.StorageRootName + "};\n"; //
+            info += "                  <bool> for " + StylusConsoleTerm.CombineIsAName + "}\n"; //
             //info += "                  <int> for max_xudt;\n"; //
             //info += "                  <char> for sep}\n"; //
-            info += "  [-] get <key> = {meta_root, storage_root, unfold_isa, max_xudt, sep}\n"; 
-            info += "  [-] start -server|-proxy|-client\n";
+            info += "  [-] get <key> = {" + StylusConsoleTerm.MetadataRootName + ", "
+                + StylusConsoleTerm.StorageRootName + ", " + StylusConsoleTerm.CombineIsAName + ", "
+                + StylusConsoleTerm.MaxXUDTName + ", " + StylusConsoleTerm.SeperatorName + "}\n"; 
+            info += "  [-] start -server|-proxy\n";
             info += " +---------------------------\n";
             info += "  [-] prepare <raw_nt_filename> [<paired_filename>]\n";
             info += "  [-] load <paired_filename>\n";
@@ -137,6 +141,9 @@ namespace Stylus.Console
             //info += "  [-] convert <file_dir> <output_filename>\n";
             //info += "  [-] dload <paired_filename> <local_storage_dir>\n";
             //info += "  [-] dloadx <encoded_paired_filename> <local_storage_dir>\n";
+            //info += "  [-] drepo\n";
+            //info += "  [-] dstat\n";
+            //info += "  [-] dquery <sparql_query_filename> [lubm]\n";
             //info += " +---------------------------\n";
             return info;
         }
@@ -160,44 +167,44 @@ namespace Stylus.Console
                     }
                     else
                     {
-                        switch (cmd.Parameters[0])
+                        switch (cmd.Parameters[0].ToLower())
                         {
-                            case "meta_root":
+                            case StylusConsoleTerm.MetadataRootName:
                                 StylusConfig.SetStoreMetaRootDir(cmd.Parameters[1]);
-                                System.Console.WriteLine("=> MetadataRoot: " + StylusConfig.GetStoreMetaRootDir());
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.MetadataRootName + ": " + StylusConfig.GetStoreMetaRootDir());
                                 break;
-                            case "storage_root":
+                            case StylusConsoleTerm.StorageRootName:
                                 TrinityConfig.StorageRoot = cmd.Parameters[1];
-                                System.Console.WriteLine("=> StorageRoot: " + TrinityConfig.StorageRoot);
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.StorageRootName + ": " + TrinityConfig.StorageRoot);
                                 break;
-                            case "unfold_isa":
-                                bool unfold_isa;
-                                if (bool.TryParse(cmd.Parameters[1], out unfold_isa))
+                            case StylusConsoleTerm.CombineIsAName:
+                                bool combine_all_isA;
+                                if (bool.TryParse(cmd.Parameters[1], out combine_all_isA))
                                 {
-                                    if (!unfold_isa)
+                                    if (!combine_all_isA)
                                     {
                                         StylusSchema.PredCandidatesForSynPred = new HashSet<string>();
                                     }
                                 }
                                 else
                                 {
-                                    System.Console.WriteLine("<bool> param is required for 'set unfold_isa'.");
+                                    System.Console.WriteLine("<bool> param is required for 'set " + StylusConsoleTerm.CombineIsAName + "'.");
                                 }
-                                System.Console.WriteLine("=> unfold_isa: " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
                                 break;
-                            case "max_xudt":
+                            case StylusConsoleTerm.MaxXUDTName:
                                 int max_xudt;
                                 if (int.TryParse(cmd.Parameters[1], out max_xudt))
                                 {
-                                    System.Console.WriteLine("<int> param is required for 'set max_xudt'.");
+                                    System.Console.WriteLine("<int> param is required for 'set " + StylusConsoleTerm.MaxXUDTName + "'.");
                                 }
                                 else
                                 {
                                     StylusConfig.MaxXudt = int.Parse(cmd.Parameters[1]);
                                 }
-                                System.Console.WriteLine("=> max_xudt: " + StylusConfig.MaxXudt);
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.MaxXUDTName + ": " + StylusConfig.MaxXudt);
                                 break;
-                            case "sep":
+                            case StylusConsoleTerm.SeperatorName:
                                 switch (cmd.Parameters[1])
 	                            {
                                     case "\\t":
@@ -207,7 +214,7 @@ namespace Stylus.Console
                                         NTripleUtil.FieldSeparator = cmd.Parameters[1][0];
                                         break;
 	                            }
-                                System.Console.WriteLine("=> sep: " + NTripleUtil.FieldSeparator);
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.SeperatorName + ": " + NTripleUtil.FieldSeparator);
                                 break;
                             default:
                                 break;
@@ -221,22 +228,22 @@ namespace Stylus.Console
                     }
                     else
                     {
-                        switch (cmd.Parameters[0])
+                        switch (cmd.Parameters[0].ToLower())
                         {
-                            case "meta_root":
-                                System.Console.WriteLine("=> MetadataRoot: " + StylusConfig.GetStoreMetaRootDir());
+                            case StylusConsoleTerm.MetadataRootName:
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.MetadataRootName + ": " + StylusConfig.GetStoreMetaRootDir());
                                 break;
-                            case "storage_root":
-                                System.Console.WriteLine("=> StorageRoot: " + TrinityConfig.StorageRoot);
+                            case StylusConsoleTerm.StorageRootName:
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.StorageRootName + ": " + TrinityConfig.StorageRoot);
                                 break;
-                            case "unfold_isa":
-                                System.Console.WriteLine("=> unfold_isa: " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
+                            case StylusConsoleTerm.CombineIsAName:
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
                                 break;
-                            case "max_xudt":
-                                System.Console.WriteLine("=> max_xudt: " + StylusConfig.MaxXudt);
+                            case StylusConsoleTerm.MaxXUDTName:
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.MaxXUDTName + ": " + StylusConfig.MaxXudt);
                                 break;
-                            case "sep":
-                                System.Console.WriteLine("=> sep: " + NTripleUtil.FieldSeparator);
+                            case StylusConsoleTerm.SeperatorName:
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.SeperatorName + ": " + NTripleUtil.FieldSeparator);
                                 break;
                             default:
                                 break;
@@ -315,11 +322,6 @@ namespace Stylus.Console
                             System.Console.Write("? ");
                         }
                     }
-                    //else if (cmd.HasOption("client"))
-                    //{
-                    //    TrinityConfig.CurrentRunningMode = RunningMode.Client;
-                    //    // TODO: send queries to the proxy
-                    //}
                     else
                     {
                         System.Console.ForegroundColor = ConsoleColor.DarkCyan;
