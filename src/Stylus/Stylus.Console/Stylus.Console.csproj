@@ -61,11 +61,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Stylus\Stylus.DataModel\Stylus.DataModel.tproj">
+    <ProjectReference Include="..\Stylus.DataModel\Stylus.DataModel.tproj">
       <Project>{1ec1aad7-3dd0-4118-89f7-09b69c05fe8c}</Project>
       <Name>Stylus.DataModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Stylus\Stylus\Stylus.csproj">
+    <ProjectReference Include="..\Stylus\Stylus.csproj">
       <Project>{e8c8e52b-5b9d-4008-a669-aa69c0479395}</Project>
       <Name>Stylus</Name>
     </ProjectReference>
