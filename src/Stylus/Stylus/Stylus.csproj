@@ -66,6 +66,7 @@
     <Compile Include="Loading\DataScanner.cs" />
     <Compile Include="Loading\LoadingEntity.cs" />
     <Compile Include="Query\TwigSolutions.cs" />
+    <Compile Include="Util\IOUtil.cs" />
     <Compile Include="Util\TwigUtil.cs" />
     <Compile Include="Util\XDictionary.cs" />
     <Compile Include="Parsing\QueryGraph.cs" />

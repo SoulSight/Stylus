@@ -35,24 +35,7 @@ namespace Stylus.Distributed
         {
             // LoadLiteralToEid
             this.LiteralToId = new XDictionary<string, long>(17);
-            var eidMapFilename = StylusConfig.GetStoreMetaRootDir() + StylusConfig.EidMapFilename;
-            long cnt = 0;
-            foreach (var line in File.ReadLines(eidMapFilename))
-            {
-                if (++cnt % 1000000 == 0)
-                {
-                    Log.WriteLine(LogLevel.Info, "LoadLiteralToId: " + cnt);
-                }
-                string[] splits = line.Split('\t');
-                if (splits.Length < 2)
-                {
-                    continue;
-                }
-                string literal = splits[0];
-                long eid = long.Parse(splits[1]);
-                this.LiteralToId.Add(literal, eid);
-            }
-            Log.WriteLine(LogLevel.Info, "LoadLiteralToId: " + cnt);
+            IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
         }
 
         #region Handlers
