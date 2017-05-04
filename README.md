@@ -1,4 +1,4 @@
-Stylus: a Strongly-Typed Store for Serving Massive RDF Data
+Stylus: A Strongly-Typed Store for Serving Massive RDF Data
 ===========================================================
 
 Stylus is a strongly-typed store for serving massive RDF data. It is built on top of a distributed in-memory key-value store. The most distinguishing characteristics of Stylus is its strongly-typed storage scheme for modeling RDF entities. 
@@ -61,9 +61,61 @@ dotNetRDF >= 1.0.12
 
 #### Data Preparation
 
-#### Single-machine Mode
+Currently, Stylus console only handles RDF data sets in NTriples format (supports on other formats coming soon).
 
-#### Distributed Mode
+Change the path where Stylus executable console locates
+
+`Stylus.Console.exe`
+
+`prepare <nt_filename> [<path_to_paired_nt_file>]` pair the RDF triples
+
+`scan <path_to_paired_nt_file>` generate the xUDT information
+
+`assign <path_to_paired_nt_file>` generate the id-literal mapping
+
+Encode the file is optional by the command: `encode <path_to_paired_nt_file> [<path_to_encoded_file>]`
+
+##### Single-machine Mode
+
+Load the raw file to the storage by:
+
+`load <path_to_paired_nt_file>` 
+
+or
+
+`loadx <path_to_encoded_file>`
+
+##### Distributed Mode
+
+Run each server by `start -server` and the proxy by `start -proxy`
+
+After the cluster starts up, run the command on the proxy to load the data in parallel:
+
+`dload <path_to_paired_nt_file>` for the raw paired file or `dloadx <path_to_encoded_file>` for the encoded paired file.
+
+#### Querying
+
+##### Single-machine Mode
+
+Reload the storage image from disk by:
+
+`repo`
+
+And query the storage by:
+
+`query <path_to_sparql_query_file> [lubm]`
+
+##### Distributed Mode
+
+Reload the storage image from disk by:
+
+`drepo`
+
+And query the storage by:
+
+`dquery <path_to_sparql_query_file> [lubm]`
+
+The `lubm` is set for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser for LUBM data sets.
 
 ## Instruction for Usage
 
