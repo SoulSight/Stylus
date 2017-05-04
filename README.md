@@ -38,7 +38,7 @@ The whole RDF graph is partitioned over a cluster of the servers using random ha
 
 As most graph processing tasks are IO-intensive and Stylus uses RAM as its main storage, designing a compact and efficient storage scheme becomes one of the core problems.
 
-The most important concept is the *User-Defined Types*, a.k.a. UDTs. 
+The most important concept in our strongly-typed system is the user-defined types (UDTs), each of which is a fixed-collection of predicates. We designed a tailored UDT, named xUDT, for modeling RDF entities. An xUDT is defined as `(tid, <p1, p2, ..., pn>)` and the instance of of an xUDT `tid` is stored as `(id, <tid, offsets, obj_vals>)`. Here is an illustration for an xUDT and its instance:
 
 ![xUDT Illustration](res/Figures/xUDT_Illustration.png)
 
@@ -48,7 +48,7 @@ The key data structure we designed for compact representation of the intermediat
 
 
 
-## Manual of Stylus
+## Stylus Usage Manual
 
 ##### Dependencies
 
@@ -60,7 +60,7 @@ The key data structure we designed for compact representation of the intermediat
 
 > Currently, Stylus console only handles RDF data sets in NTriples format (support for other formats is coming soon).
 
-Change the directory to the location of Stylus executable console (the SLN file is `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data:
+Change the directory to the location of Stylus executable console (compiled from `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data:
 
 - `prepare <nt_filename> [<path_to_paired_nt_file>]`: pair the RDF triples
 - `scan <path_to_paired_nt_file>`: generate the xUDT information
@@ -69,16 +69,16 @@ Change the directory to the location of Stylus executable console (the SLN file 
 
 
 - Data loading:
-  - *Single-machine mode*: load the raw file to the storage by `load <path_to_paired_nt_file>` or `loadx <path_to_encoded_file>`
-  - *Distributed mode*: run each server by `start -server` and the proxy by `start -proxy`. After the cluster starts up, run the command on the proxy to load the data in parallel: `dload <path_to_paired_nt_file>` for the raw paired file or `dloadx <path_to_encoded_file>` for the encoded paired file
+  - Single-machine mode: load the raw file to the storage by `load <path_to_paired_nt_file>` or `loadx <path_to_encoded_file>`
+  - Distributed mode: run each server by `start -server` and the proxy by `start -proxy`. After the cluster starts up, run the command on the proxy to load the data in parallel: `dload <path_to_paired_nt_file>` for the raw paired file or `dloadx <path_to_encoded_file>` for the encoded paired file
 
 ##### Querying
 
-- *Single-machine mode*
+- Single-machine mode
 
   Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [lubm]`
 
-- *Distributed Mode*
+- Distributed Mode
 
   Reload the storage image from disk by `drepo`, and query the storage by `dquery <path_to_sparql_query_file> [lubm]`. The `lubm` is set for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser for LUBM data sets
 
