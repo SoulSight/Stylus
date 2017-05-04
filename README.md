@@ -5,8 +5,6 @@ Stylus is a strongly-typed store for serving massive RDF data. It is built on to
 
 
 ## Design Philosophy
-### Requirements
-
 Stylus is built on top of a distributed in-memory key-value store that **1)** supports *in-place* data access to the selected parts of a data record, instead of serializing or deserializing the whole KV pair; **2)** supports *message passing* between distributed servers.
 
 #### Why an In-memory Infrastructure
@@ -17,9 +15,13 @@ access of the graph data [1] and the main memory (RAM) is still the most viable 
 #### Why a Strongly-Typed Storage Scheme
 The benefits of the strongly typed storage scheme is providing **1)** a compact storage,  **2)** fast random data accesses, and **3)** reduced joins for query processing.
 
-#### Why Previous Solutions Fail
+#### More Details
 
-The idea of defining entity types using grouped predicates has already been adopted in the RDBMS based models. However, they are failed to deliver high performance due to the following reasons. First, the multi-valued properties are hard to arrange in relational tables as faced by property table based methods. In this case, an individual table is necessary for storing them, but multi-valued properties spreading all over the data sets reduce this model back to a giant untyped triple table at performance; Second, real-life entities are likely to play multiple roles, meaning each entity may have combinatorial properties from very different aspects. A common practice is to span the entity’s data across several records. However, additional joins are inevitable for aggregating entity segments in this case. The more records those entities are partitioned, the more joins are needed for aggregation; Third, a fixed schema agnostic of the data set is likely to produce lots of NULLs for the absent properties of entities. It is very costly to store those unnecessary NULLs, especially for a large number of predicates.
+Multi-valued properties as first-citizen
+
+A unified record for each entity instead of entity segments that require additional joins for data aggregation
+
+Data-aware storage scheme to minimize the storage cost
 
 ## System Architecture 
 
@@ -45,7 +47,7 @@ The key data structure we designed for compact representation of the intermediat
 
 ![xTwig Examples](res/Figures/xTwig.png)
 
-#### Distributed Execution
+
 
 ## Manual of Stylus
 
