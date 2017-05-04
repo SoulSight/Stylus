@@ -58,9 +58,9 @@ The key data structure we designed for compact representation of the intermediat
 
 ##### Data Preparation
 
-Currently, Stylus console only handles RDF data sets in NTriples format (support on other formats is coming soon).
+> Currently, Stylus console only handles RDF data sets in NTriples format (support for other formats is coming soon).
 
-Change the path where Stylus executable console locates and run `Stylus.Console.exe`. Then run these commands to prepare the data:
+Change the directory to the location of Stylus executable console (the SLN file is `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data:
 
 - `prepare <nt_filename> [<path_to_paired_nt_file>]`: pair the RDF triples
 - `scan <path_to_paired_nt_file>`: generate the xUDT information
@@ -70,17 +70,17 @@ Change the path where Stylus executable console locates and run `Stylus.Console.
 
 - Data loading:
   - *Single-machine mode*: load the raw file to the storage by `load <path_to_paired_nt_file>` or `loadx <path_to_encoded_file>`
-  - *Distributed mode*: run each server by `start -server` and the proxy by `start -proxy`. After the cluster starts up, run the command on the proxy to load the data in parallel: `dload <path_to_paired_nt_file>` for the raw paired file or `dloadx <path_to_encoded_file>` for the encoded paired file.
+  - *Distributed mode*: run each server by `start -server` and the proxy by `start -proxy`. After the cluster starts up, run the command on the proxy to load the data in parallel: `dload <path_to_paired_nt_file>` for the raw paired file or `dloadx <path_to_encoded_file>` for the encoded paired file
 
 ##### Querying
 
 - *Single-machine mode*
 
-  Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [lubm]`;
+  Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [lubm]`
 
 - *Distributed Mode*
 
-  Reload the storage image from disk by `drepo`, and query the storage by `dquery <path_to_sparql_query_file> [lubm]`. The `lubm` is set for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser for LUBM data sets.
+  Reload the storage image from disk by `drepo`, and query the storage by `dquery <path_to_sparql_query_file> [lubm]`. The `lubm` is set for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser for LUBM data sets
 
 ##
 
