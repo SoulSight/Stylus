@@ -117,6 +117,6 @@ And query the storage by:
 
 The `lubm` is set for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser for LUBM data sets.
 
-## Instruction for Usage
+## 
 
 [1]: A. Lumsdaine, D. Gregor, B. Hendrickson, and J. Berry. **Challenges in parallel graph processing.** Parallel Processing Letters, 17(01), 2007.
