@@ -3,7 +3,6 @@ Stylus: a Strongly-Typed Store for Serving Massive RDF Data
 
 Stylus is a strongly-typed store for serving massive RDF data. It is built on top of a distributed in-memory key-value store. The most distinguishing characteristics of Stylus is its strongly-typed storage scheme for modeling RDF entities. 
 
-[TOC]
 
 ## Design Philosophy
 ### Requirements
@@ -27,11 +26,11 @@ As most graph processing tasks are IO-intensive and Stylus uses RAM as its main 
 
 The most important concept is the *User-Defined Types*, a.k.a. UDTs. 
 
-![Architecture Overview of Stylus](.\res\Figures\xUDT_Illustration.png){:height="24px"}
+![Architecture Overview of Stylus](https://github.com/SoulSight/Stylus/blob/master/res/Figures/xUDT_Illustration.png){:height="24px"}
 
 The key data structure we designed for compact representation of the intermediate results is xTwig.
 
-![Architecture Overview of Stylus](.\res\Figures\xTwig.png)
+![Architecture Overview of Stylus](https://github.com/SoulSight/Stylus/blob/master/res/Figures/xTwig.png)
 
 #### Distributed Execution
 
@@ -43,7 +42,7 @@ Most importantly, Stylus always models an RDF data set as a strongly-typed direc
 
 Stylus is distributed SPARQL query processing engine on top of the strongly-typed storage scheme given above. The overall architecture of Stylus is shown in the figure. 
 
-![Architecture Overview of Stylus](.\res\Figures\ServingDesign.png)
+![Architecture Overview of Stylus](https://github.com/SoulSight/Stylus/blob/master/res/Figures/ServingDesign.png)
 
 The whole RDF graph is partitioned over a cluster of the servers using random hashing. Each server has duplicated graph schema, but the data partitions are disjoint. A user submits a query to the query coordinator. The coordinator generates a query plan based on prepared statistics and indices and distributes the query plan to all servers. Then, each server executes the query plan and send back the partial query results to the coordinator. On receiving all partial results, the coordinator aggregates them and return the final result to the user.
 
