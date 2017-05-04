@@ -13,7 +13,7 @@ An efficient distributed in-memory key-value store is an essential part of Stylu
 access of the graph data [1] and the main memory (RAM) is still the most viable approach to fast random access. On the other hand, the ever growing size of knowledge requires scalable solutions and distributed systems built using commodity servers are usually more economical and easier to maintain compared with scale-up approaches. Particularly, we build our RDF store on top of [Microsoft Trinity Graph Engine](https://www.graphengine.io/), which well meet the requirements discussed above.
 
 #### Why a Strongly-Typed Storage Scheme
-The benefits of the strongly typed storage scheme is providing **1)** a compact storage,  **2)** fast random data accesses, and **3)** reduced joins for query processing.
+The benefits of the strongly typed storage scheme are providing **1)** a compact storage,  **2)** fast random data accesses, and **3)** reduced joins for query processing.
 
 #### More Details
 
