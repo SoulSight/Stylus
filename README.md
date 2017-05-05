@@ -76,11 +76,13 @@ Change the directory to the location of Stylus executable console (compiled from
 
 - Single-machine mode
 
-  Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [lubm]`
+  Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [fix]`
 
 - Distributed Mode
 
-  Reload the storage image from disk by `drepo`, and query the storage by `dquery <path_to_sparql_query_file> [lubm]`. The `lubm` is set for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser for LUBM data sets
+  Reload the storage image from disk by `drepo`, and query the storage by `dquery <path_to_sparql_query_file> [fix]`. 
+
+The optional `fix` is set up for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser (for example, for LUBM data sets)
 
 ##
 

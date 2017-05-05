@@ -300,7 +300,7 @@ namespace Stylus.Console
                                         });
                                         break;
                                     case "dquery":
-                                        if (splits.Length == 3 && splits[2] == "lubm")
+                                        if (splits.Length == 3 && splits[2] == "fix")
                                         {
                                             proxy.SetParserFixFunc(FixLUBMString);
                                         }
@@ -360,7 +360,7 @@ namespace Stylus.Console
                     break;
                 case "query":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-                    if (cmd.HasOption("fix", "lubm"))
+                    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
                     {
                         parser.FixStrFunc = FixLUBMString;
                     }
