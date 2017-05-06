@@ -42,7 +42,7 @@ The most important concept in our strongly-typed system is the user-defined type
 
 ![xUDT Illustration](res/Figures/xUDT_Illustration.png)
 
-The key data structure we designed for compact representation of the intermediate results is xTwig.
+The key data structure we designed for compact representation of the intermediate results is xTwig. There are some examples:
 
 ![xTwig Examples](res/Figures/xTwig.png)
 
@@ -58,7 +58,7 @@ The key data structure we designed for compact representation of the intermediat
 
 #### RDF Data Preparing & Loading
 
-> Currently, Stylus console only handles RDF data sets in NTriples format (support for other formats is coming soon).
+> Currently, Stylus console only handles RDF data sets in NTriples format (support for other formats is coming soon). To configure the distributed Graph Engine cluster, please refer to [geconfig](https://www.graphengine.io/docs/manual/Utilities/geconfig.html) for more details.
 
 Switch to the location of Stylus executable console (compiled from `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data:
 
