@@ -302,7 +302,7 @@ namespace Stylus.Console
                                     case "dquery":
                                         if (splits.Length == 3 && splits[2] == "fix")
                                         {
-                                            proxy.SetParserFixFunc(FixLUBMString);
+                                            proxy.SetParserFixFunc(FixUriString);
                                         }
                                         SparqlQueryWriter query_msg = new SparqlQueryWriter(File.ReadAllText(splits[1]));
                                         System.Console.WriteLine("Query from File: " + splits[1]);
@@ -319,7 +319,7 @@ namespace Stylus.Console
                                             }
                                             if (results.Records.Count > 10)
                                             {
-                                                System.Console.WriteLine("...");
+                                                System.Console.WriteLine("More...");
                                             }
                                         }
                                         break;
@@ -375,7 +375,7 @@ namespace Stylus.Console
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
                     {
-                        parser.FixStrFunc = FixLUBMString;
+                        parser.FixStrFunc = FixUriString;
                     }
                     else
                     {
@@ -430,7 +430,7 @@ namespace Stylus.Console
             }
         }
 
-        private static void Query(IQueryWorker server, SparqlParser parser, string query_str)
+        private static void Query(IQueryWorker server, SparqlParser parser, string query_str, bool peak = true)
         {
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.Plan(query);
@@ -439,9 +439,25 @@ namespace Stylus.Console
             var results = server.Execute(plan);
             sw.Stop();
             System.Console.WriteLine("{0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
+
+            if (peak)
+            {
+                int min = Math.Min(results.Records.Count, 10);
+                if (min > 0)
+                {
+                    foreach (var sol in server.ResolveQuerySolutions(results).Take(min))
+                    {
+                        System.Console.WriteLine(string.Join(", ", sol));
+                    }
+                    if (results.Records.Count > 10)
+                    {
+                        System.Console.WriteLine("More...");
+                    }
+                }
+            }
         }
 
-        private static string FixLUBMString(string str)
+        private static string FixUriString(string str) // for LUBM queries
         {
             if (str.Contains("/>"))
             {

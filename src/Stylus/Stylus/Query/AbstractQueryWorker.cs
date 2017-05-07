@@ -31,23 +31,47 @@ namespace Stylus.Query
             get;
         }
 
+        private Dictionary<uint, string[]> IdToLiteral;
+
         public AbstractQueryWorker() 
         {
             if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
             {
                 // Initialize: LiteralToEid & Statistics
-                LoadLiteralToId();
+                LoadLiteralMapping();
             }
 
             Storage = RAMStorage.Singleton;
             CardStatistics = RAMStorage.CardStatistics;
         }
 
-        private void LoadLiteralToId() 
+        private void AddLiteralMapEntry(string literal, long eid)
+        {
+            this.LiteralToId.Add(literal, eid);
+            ushort tid = TidUtil.GetTid(eid);
+            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
+            this.IdToLiteral[tid][index] = literal;
+        }
+
+        private string GetLiteral(long eid)
+        {
+            ushort tid = TidUtil.GetTid(eid);
+            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
+            return this.IdToLiteral[tid][index];
+        }
+
+        private void LoadLiteralMapping() 
         {
             // LoadLiteralToEid
             this.LiteralToId = new Dictionary<string, long>();
-            IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
+            this.IdToLiteral = new Dictionary<uint, string[]>();
+            foreach (var tid2count in StylusSchema.Tid2Count)
+            {
+                IdToLiteral.Add(tid2count.Key, new string[(int)tid2count.Value]);
+            }
+
+            // IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
+            IOUtil.LoadEidMapFile((literal, eid) => AddLiteralMapEntry(literal, eid));
         }
 
         public List<xTwigHead> Plan(QueryGraph qg) 
@@ -1037,5 +1061,13 @@ namespace Stylus.Query
         public abstract QuerySolutions ExecuteSingleTwig(xTwigHead head);
 
         public abstract QuerySolutions Execute(List<xTwigHead> heads);
+
+        public IEnumerable<List<string>> ResolveQuerySolutions(QuerySolutions querySolutions)
+        {
+            foreach (var record in querySolutions.Records)
+            {
+                yield return record.Select(eid => this.GetLiteral(eid)).ToList();
+            }
+        }
     }
 }
