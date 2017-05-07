@@ -18,7 +18,7 @@ namespace Stylus
     {
         internal static Dictionary<ushort, List<long>> Tid2Pids = new Dictionary<ushort, List<long>>();
         internal static Dictionary<string, long> Pred2Pid = new Dictionary<string, long>();
-        internal static Dictionary<ushort, double> Tid2Count = new Dictionary<ushort,double>();
+        internal static Dictionary<ushort, double> Tid2Count = new Dictionary<ushort, double>();
 
         internal static Dictionary<ushort, Dictionary<long, int>> TidPid2Index = new Dictionary<ushort, Dictionary<long, int>>();
         internal static Dictionary<long, Dictionary<ushort, int>> PidTid2Index = new Dictionary<long, Dictionary<ushort, int>>();

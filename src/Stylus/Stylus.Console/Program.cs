@@ -309,6 +309,19 @@ namespace Stylus.Console
                                         //Global.CloudStorage.ExecuteQueryToSparqlDataProxy(0, query_msg);
                                         //var results = proxy.ExecuteQuery(query_msg);
                                         var results = proxy.ExecuteQueryWithParallelJoin(query_msg);
+
+                                        int min = Math.Min(results.Records.Count, 10);
+                                        if (min > 0)
+                                        {
+                                            foreach (var sol in proxy.ResolveQueryResults(results).Take(min))
+                                            {
+                                                System.Console.WriteLine(string.Join(", ", sol));
+                                            }
+                                            if (results.Records.Count > 10)
+                                            {
+                                                System.Console.WriteLine("...");
+                                            }
+                                        }
                                         break;
                                     default:
                                         break;

@@ -22,20 +22,43 @@ namespace Stylus.Distributed
         private SparqlParser parser = new SparqlParser();
         private Statistics statistics;
         private XDictionary<string, long> LiteralToId;
+        private Dictionary<uint, string[]> IdToLiteral;
         private int cur_query_id = 0;
 
         public SparqlDataProxy() 
         {
             StylusSchema.LoadFromFile();
             // this.statistics = new Statistics();
-            LoadLiteralToId();
+            LoadLiteralMapping();
         }
 
-        private void LoadLiteralToId()
+        private void AddLiteralMapEntry(string literal, long eid) 
+        {
+            this.LiteralToId.Add(literal, eid);
+            ushort tid = TidUtil.GetTid(eid);
+            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
+            this.IdToLiteral[tid][index] = literal;
+        }
+
+        private string GetLiteral(long eid) 
+        {
+            ushort tid = TidUtil.GetTid(eid);
+            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
+            return this.IdToLiteral[tid][index];
+        }
+
+        private void LoadLiteralMapping()
         {
             // LoadLiteralToEid
             this.LiteralToId = new XDictionary<string, long>(17);
-            IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
+            this.IdToLiteral = new Dictionary<uint, string[]>();
+            foreach (var tid2count in StylusSchema.Tid2Count)
+            {
+                IdToLiteral.Add(tid2count.Key, new string[(int)tid2count.Value]);
+            }
+
+            // IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
+            IOUtil.LoadEidMapFile((literal, eid) => AddLiteralMapEntry(literal, eid));
         }
 
         #region Handlers
@@ -289,6 +312,14 @@ namespace Stylus.Distributed
             {
                 Log.WriteLine(LogLevel.Info, ids_as_qs.Count + " results, " + sw.Elapsed.TotalMilliseconds + " ms");
                 return new QueryResults(qg.SelectedVariables, ids_as_qs.Select(rec => new List<long>() { rec }).ToList());
+            }
+        }
+
+        public IEnumerable<List<string>> ResolveQueryResults(QueryResults queryResults)
+        {
+            foreach (var record in queryResults.Records)
+            {
+                yield return record.Select(eid => this.GetLiteral(eid)).ToList();
             }
         }
         #endregion

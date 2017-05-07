@@ -81,7 +81,7 @@ namespace Stylus.Distributed
             //TrinityConfig.ReadOnly = true;
             Global.LocalStorage.LoadStorage();
             storage.ReloadIndices();
-            local_stat = RAMStorage.CardStatistics;
+            //local_stat = RAMStorage.CardStatistics;
         }
 
         public override void AggregateStatInfoHandler(LocalStatInfoWriter response)
