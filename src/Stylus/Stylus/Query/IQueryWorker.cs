@@ -41,5 +41,7 @@ namespace Stylus.Query
         QuerySolutions ExecuteSingleTwig(xTwigHead head);
 
         QuerySolutions Execute(List<xTwigHead> heads);
+
+        IEnumerable<List<string>> ResolveQuerySolutions(QuerySolutions querySolutions);
     }
 }
