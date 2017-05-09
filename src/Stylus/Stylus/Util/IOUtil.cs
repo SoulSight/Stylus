@@ -47,6 +47,10 @@ namespace Stylus.Util
         public static void SaveEidMapFile(IEnumerable<KeyValuePair<string, long>> kvps)
         {
             var eidMapFilename = GetEidMapFilename();
+            if (File.Exists(eidMapFilename))
+            {
+                File.Move(eidMapFilename, eidMapFilename + ".bak");
+            }
 
             FileStream fs = new FileStream(eidMapFilename, FileMode.OpenOrCreate);
             using (StreamWriter writer = new StreamWriter(new GZipStream(fs, CompressionMode.Compress)))

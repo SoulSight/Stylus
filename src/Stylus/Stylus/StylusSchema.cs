@@ -409,6 +409,11 @@ namespace Stylus
                         Log.WriteLine(LogLevel.Info, "Process " + cnt + " lines");
                     }
                     string[] splits = NTripleUtil.FastSplit(line);
+                    if (splits.Length < 3)
+                    {
+                        Log.WriteLine(LogLevel.Warning, "Skip line: " + line);
+                        continue;
+                    }
                     if (splits[0] != pre && pre != "")
                     {
                         IncrFreq(xUDT_freq, ConcatPids(preds));
