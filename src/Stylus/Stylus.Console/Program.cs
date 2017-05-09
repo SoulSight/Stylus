@@ -438,7 +438,11 @@ namespace Stylus.Console
             sw.Start();
             var results = server.Execute(plan);
             sw.Stop();
-            System.Console.WriteLine("{0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
+            System.Console.WriteLine("=> {0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
+            if (results.Records.Count > 0)
+            {
+                System.Console.WriteLine("[" + string.Join(", ", query.SelectedVariables) + "]");
+            }
 
             if (peak)
             {
@@ -451,8 +455,15 @@ namespace Stylus.Console
                     }
                     if (results.Records.Count > 10)
                     {
-                        System.Console.WriteLine("More...");
+                        System.Console.WriteLine((results.Records.Count - 10) + " more...");
                     }
+                }
+            }
+            else
+            {
+                foreach (var sol in server.ResolveQuerySolutions(results))
+                {
+                    System.Console.WriteLine(string.Join(", ", sol));
                 }
             }
         }
