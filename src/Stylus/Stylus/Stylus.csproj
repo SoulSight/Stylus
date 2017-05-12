@@ -65,6 +65,7 @@
     <Compile Include="Distributed\SparqlDataServer.cs" />
     <Compile Include="Loading\DataScanner.cs" />
     <Compile Include="Loading\LoadingEntity.cs" />
+    <Compile Include="Query\GraphServer.cs" />
     <Compile Include="Query\TwigSolutions.cs" />
     <Compile Include="Util\IOUtil.cs" />
     <Compile Include="Util\TwigUtil.cs" />
