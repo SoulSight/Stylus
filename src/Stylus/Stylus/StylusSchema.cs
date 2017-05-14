@@ -258,12 +258,12 @@ namespace Stylus
         #endregion
 
         #region Utils
-        public static HashSet<ushort> SupType(IEnumerable<long> pids)
+        public static HashSet<ushort> GetUDTs(IEnumerable<long> pids)
         {
             HashSet<ushort> sup_types = null;
             foreach (var pid in pids)
             {
-                var contained_tids = ContainedTypeForPid(pid);
+                var contained_tids = GetUDTsForPid(pid);
                 if (sup_types == null)
                 {
                     sup_types = new HashSet<ushort>(contained_tids);
@@ -278,7 +278,7 @@ namespace Stylus
         }
 
         // Regarding Synthetic Predicates: [rdf:type] => [rdf:type_Person], [rdf:type_Film] => Tids
-        public static HashSet<ushort> ContainedTypeForPid(long pid)
+        public static HashSet<ushort> GetUDTsForPid(long pid)
         {
             HashSet<ushort> contained_tids = new HashSet<ushort>();
             if (!StylusSchema.Pid2Synpids.ContainsKey(pid)) // no synthetic pred for it

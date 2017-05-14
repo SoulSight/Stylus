@@ -61,7 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Distributed\SparqlDataProxy.cs" />
+    <Compile Include="Distributed\SparqlQueryCoordinator.cs" />
     <Compile Include="Distributed\SparqlDataServer.cs" />
     <Compile Include="Loading\DataScanner.cs" />
     <Compile Include="Loading\LoadingEntity.cs" />

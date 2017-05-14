@@ -12,9 +12,9 @@ namespace Stylus.Storage
     {
         Dictionary<ushort, List<long>> TidInstances { set; get; }
 
-        HashSet<ushort> SupType(IEnumerable<long> pids);
+        HashSet<ushort> GetUDTs(IEnumerable<long> pids);
 
-        List<long> LoadIndex(ushort tid);
+        List<long> LoadEids(ushort tid);
 
         // Select object
         long[] SelectOffset(long eid, int offsetIndex);

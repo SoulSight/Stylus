@@ -223,7 +223,7 @@ namespace Stylus.Query
 
         public double EstimateRootCard(List<long> pids)
         {
-            var sup_tids = StylusSchema.SupType(pids);
+            var sup_tids = StylusSchema.GetUDTs(pids);
             double total = 0.0;
             foreach (var tid in sup_tids)
             {
@@ -234,7 +234,7 @@ namespace Stylus.Query
 
         public double EstimateLeafCard(double root_cardinality, List<long> pids, long leaf_pid)
         {
-            var sup_tids = StylusSchema.SupType(pids);
+            var sup_tids = StylusSchema.GetUDTs(pids);
             Dictionary<ushort, double> inst_counts = new Dictionary<ushort, double>();
 
             double total = 0.0;

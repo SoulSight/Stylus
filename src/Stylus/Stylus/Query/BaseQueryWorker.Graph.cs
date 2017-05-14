@@ -79,7 +79,7 @@ namespace Stylus.Query
 
         public IEnumerable<long> GetSids(IEnumerable<long> pids) 
         {
-            var tids = Storage.SupType(pids);
+            var tids = Storage.GetUDTs(pids);
             foreach (var tid in tids)
             {
                 var list = Storage.TidInstances[tid];

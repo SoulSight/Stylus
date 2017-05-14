@@ -142,7 +142,7 @@ namespace Stylus.Storage
                 long pid = kvp.Value.Item1;
                 long oid = kvp.Value.Item2;
 
-                var tids = StylusSchema.ContainedTypeForPid(synpid);
+                var tids = StylusSchema.GetUDTsForPid(synpid);
 
                 foreach (var tid in tids)
                 {
@@ -171,12 +171,12 @@ namespace Stylus.Storage
             }
         }
 
-        public HashSet<ushort> SupType(IEnumerable<long> pids)
+        public HashSet<ushort> GetUDTs(IEnumerable<long> pids)
         {
-            return StylusSchema.SupType(pids);
+            return StylusSchema.GetUDTs(pids);
         }
 
-        public List<long> LoadIndex(ushort tid)
+        public List<long> LoadEids(ushort tid)
         {
             List<long> instances = new List<long>();
             tid_instances.TryGetValue(tid, out instances);

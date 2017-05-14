@@ -81,7 +81,7 @@ namespace Stylus.Query
                 var tids = (binding as TidBinding).Tids;
                 foreach (var tid in tids)
                 {
-                    ICollection<long> values = this.Storage.LoadIndex(tid);
+                    ICollection<long> values = this.Storage.LoadEids(tid);
                     yield return Tuple.Create(tid, values);
                 }
             }

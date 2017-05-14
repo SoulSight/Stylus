@@ -260,7 +260,7 @@ namespace Stylus.Console
                     else if (cmd.HasOption("proxy"))
                     {
                         TrinityConfig.CurrentRunningMode = RunningMode.Proxy;
-                        SparqlDataProxy proxy = new SparqlDataProxy();
+                        SparqlQueryCoordinator proxy = new SparqlQueryCoordinator();
                         proxy.Start();
 
                         System.Console.ForegroundColor = ConsoleColor.White;

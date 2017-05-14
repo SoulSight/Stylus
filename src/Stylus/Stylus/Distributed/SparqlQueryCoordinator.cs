@@ -17,7 +17,7 @@ using System.Diagnostics;
 
 namespace Stylus.Distributed
 {
-    public class SparqlDataProxy : SparqlDataProxyBase
+    public class SparqlQueryCoordinator : SparqlDataProxyBase
     {
         private SparqlParser parser = new SparqlParser();
         private Statistics statistics;
@@ -25,7 +25,7 @@ namespace Stylus.Distributed
         private Dictionary<uint, string[]> IdToLiteral;
         private int cur_query_id = 0;
 
-        public SparqlDataProxy() 
+        public SparqlQueryCoordinator() 
         {
             StylusSchema.LoadFromFile();
             // this.statistics = new Statistics();
@@ -353,7 +353,7 @@ namespace Stylus.Distributed
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(StylusSchema.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(StylusSchema.GetUDTs(pids)));
                 }
                 else
                 {
@@ -492,7 +492,7 @@ namespace Stylus.Distributed
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(StylusSchema.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(StylusSchema.GetUDTs(pids)));
                 }
                 else
                 {

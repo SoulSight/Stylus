@@ -117,7 +117,7 @@ namespace Stylus.Query
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(Storage.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(Storage.GetUDTs(pids)));
                 }
                 else
                 {
@@ -274,7 +274,7 @@ namespace Stylus.Query
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(Storage.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(Storage.GetUDTs(pids)));
                 }
                 else
                 {
@@ -495,7 +495,7 @@ namespace Stylus.Query
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(Storage.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(Storage.GetUDTs(pids)));
                 }
                 else
                 {
@@ -627,7 +627,7 @@ namespace Stylus.Query
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(Storage.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(Storage.GetUDTs(pids)));
                 }
                 else
                 {
@@ -767,7 +767,7 @@ namespace Stylus.Query
 
                 if (kvp.Value.IsVariable)
                 {
-                    bindings.Add(node_name, new TidBinding(Storage.SupType(pids)));
+                    bindings.Add(node_name, new TidBinding(Storage.GetUDTs(pids)));
                 }
                 else
                 {
