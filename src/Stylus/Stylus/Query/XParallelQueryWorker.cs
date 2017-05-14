@@ -10,7 +10,7 @@ using Stylus.DataModel;
 
 namespace Stylus.Query
 {
-    public class XParallelQueryWorker : AbstractQueryWorker
+    public class XParallelQueryWorker : BaseQueryWorker
     {
         private ConcurrentDictionary<string, Binding> query_bindings
             = new ConcurrentDictionary<string,Binding>();

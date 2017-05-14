@@ -15,7 +15,7 @@ using Stylus.DataModel;
 
 namespace Stylus.Query
 {
-    public abstract class AbstractQueryWorker : IQueryWorker
+    public abstract partial class BaseQueryWorker : IQueryWorker
     {
         public IStorage Storage
         {
@@ -33,12 +33,15 @@ namespace Stylus.Query
 
         private Dictionary<uint, string[]> IdToLiteral;
 
-        public AbstractQueryWorker() 
+        private Dictionary<long, string> pid2pred = new Dictionary<long, string>();
+
+        public BaseQueryWorker() 
         {
             if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
             {
                 // Initialize: LiteralToEid & Statistics
                 LoadLiteralMapping();
+                InitPid2Pred();
             }
 
             Storage = RAMStorage.Singleton;
@@ -51,6 +54,14 @@ namespace Stylus.Query
             ushort tid = TidUtil.GetTid(eid);
             int index = (int)TidUtil.CloneMaskTid(eid) - 1;
             this.IdToLiteral[tid][index] = literal;
+        }
+
+        private void InitPid2Pred()
+        {
+            foreach (var item in StylusSchema.Pred2Pid)
+            {
+                this.pid2pred.Add(item.Value, item.Key);
+            }
         }
 
         private string GetLiteral(long eid)

@@ -10,7 +10,7 @@ using Stylus.DataModel;
 
 namespace Stylus.Query
 {
-    public class LinearQueryWorker : AbstractQueryWorker
+    public class LinearQueryWorker : BaseQueryWorker
     {
         private Dictionary<string, Binding> query_bindings 
             = new Dictionary<string,Binding>();

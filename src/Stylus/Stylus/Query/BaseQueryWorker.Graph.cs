@@ -12,77 +12,8 @@ using Stylus.Util;
 
 namespace Stylus.Query
 {
-    public class GraphApiWorker
+    public abstract partial class BaseQueryWorker
     {
-        public IStorage Storage
-        {
-            set;
-            get;
-        }
-
-        public Statistics CardStatistics { set; get; }
-
-        public Dictionary<string, long> LiteralToId
-        {
-            set;
-            get;
-        }
-
-        private Dictionary<uint, string[]> IdToLiteral;
-
-        private Dictionary<long, string> pid2pred = new Dictionary<long, string>();
-
-        public GraphApiWorker() 
-        {
-            if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
-            {
-                // Initialize: LiteralToEid & Statistics
-                LoadLiteralMapping();
-            }
-
-            Storage = RAMStorage.Singleton;
-            CardStatistics = RAMStorage.CardStatistics;
-
-            InitPid2Pred();
-        }
-
-        private void AddLiteralMapEntry(string literal, long eid)
-        {
-            this.LiteralToId.Add(literal, eid);
-            ushort tid = TidUtil.GetTid(eid);
-            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
-            this.IdToLiteral[tid][index] = literal;
-        }
-
-        private void InitPid2Pred()
-        {
-            foreach (var item in StylusSchema.Pred2Pid)
-            {
-                this.pid2pred.Add(item.Value, item.Key);
-            }
-        }
-
-        private string GetLiteral(long eid)
-        {
-            ushort tid = TidUtil.GetTid(eid);
-            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
-            return this.IdToLiteral[tid][index];
-        }
-
-        private void LoadLiteralMapping() 
-        {
-            // LoadLiteralToEid
-            this.LiteralToId = new Dictionary<string, long>();
-            this.IdToLiteral = new Dictionary<uint, string[]>();
-            foreach (var tid2count in StylusSchema.Tid2Count)
-            {
-                IdToLiteral.Add(tid2count.Key, new string[(int)tid2count.Value]);
-            }
-
-            // IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
-            IOUtil.LoadEidMapFile((literal, eid) => AddLiteralMapEntry(literal, eid));
-        }
-
         public List<long> GetPids(long eid) 
         {
             ushort tid = TidUtil.GetTid(eid);
@@ -144,6 +75,43 @@ namespace Stylus.Query
         {
             var pids = this.GetPids(eid);
             return Storage.SelectObjectsToList(eid, pids).SelectMany(l => l).ToList();
+        }
+
+        public IEnumerable<long> GetSids(IEnumerable<long> pids) 
+        {
+            var tids = Storage.SupType(pids);
+            foreach (var tid in tids)
+            {
+                var list = Storage.TidInstances[tid];
+                foreach (var item in list)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public IEnumerable<string> GetSubjs(IEnumerable<long> pids)
+        {
+            var sids = GetSids(pids);
+            foreach (var sid in sids)
+            {
+                yield return GetLiteral(sid);
+            }
+        }
+
+        public IEnumerable<long> GetSids(IEnumerable<string> preds)
+        {
+            var pids = preds.Select(pred => StylusSchema.Pred2Pid[pred]);
+            return GetSids(pids);
+        }
+
+        public IEnumerable<string> GetSubjs(IEnumerable<string> preds) 
+        {
+            var sids = GetSids(preds);
+            foreach (var sid in sids)
+            {
+                yield return GetLiteral(sid);
+            }
         }
     }
 }

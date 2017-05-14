@@ -65,7 +65,7 @@
     <Compile Include="Distributed\SparqlDataServer.cs" />
     <Compile Include="Loading\DataScanner.cs" />
     <Compile Include="Loading\LoadingEntity.cs" />
-    <Compile Include="Query\GraphServer.cs" />
+    <Compile Include="Query\BaseQueryWorker.Graph.cs" />
     <Compile Include="Query\TwigSolutions.cs" />
     <Compile Include="Util\IOUtil.cs" />
     <Compile Include="Util\TwigUtil.cs" />
@@ -78,7 +78,7 @@
     <Compile Include="Preprocess\Preprocessor.cs" />
     <Compile Include="Preprocess\XPreprocessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\AbstractQueryWorker.cs" />
+    <Compile Include="Query\BaseQueryWorker.SPARQL.cs" />
     <Compile Include="Query\Binding.cs" />
     <Compile Include="Query\IQueryWorker.cs" />
     <Compile Include="Query\LinearQueryWorker.cs" />
