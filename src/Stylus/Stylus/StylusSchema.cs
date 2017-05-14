@@ -16,22 +16,22 @@ namespace Stylus
 {
     public class StylusSchema
     {
-        internal static Dictionary<ushort, List<long>> Tid2Pids = new Dictionary<ushort, List<long>>();
-        internal static Dictionary<string, long> Pred2Pid = new Dictionary<string, long>();
-        internal static Dictionary<ushort, double> Tid2Count = new Dictionary<ushort, double>();
+        public static Dictionary<ushort, List<long>> Tid2Pids = new Dictionary<ushort, List<long>>();
+        public static Dictionary<string, long> Pred2Pid = new Dictionary<string, long>();
+        public static Dictionary<ushort, double> Tid2Count = new Dictionary<ushort, double>();
 
-        internal static Dictionary<ushort, Dictionary<long, int>> TidPid2Index = new Dictionary<ushort, Dictionary<long, int>>();
-        internal static Dictionary<long, Dictionary<ushort, int>> PidTid2Index = new Dictionary<long, Dictionary<ushort, int>>();
-        internal static HashSet<long> GenericInclusivePids = new HashSet<long>();
+        public static Dictionary<ushort, Dictionary<long, int>> TidPid2Index = new Dictionary<ushort, Dictionary<long, int>>();
+        public static Dictionary<long, Dictionary<ushort, int>> PidTid2Index = new Dictionary<long, Dictionary<ushort, int>>();
+        public static HashSet<long> GenericInclusivePids = new HashSet<long>();
 
-        internal static Dictionary<long, long> InvPreds = new Dictionary<long, long>();
+        public static Dictionary<long, long> InvPreds = new Dictionary<long, long>();
 
-        internal static List<Tuple<long, long, long>> SynpidPidOids = new List<Tuple<long, long, long>>();
+        public static List<Tuple<long, long, long>> SynpidPidOids = new List<Tuple<long, long, long>>();
 
-        internal static Dictionary<long, Tuple<long, long>> Synpid2PidOid = new Dictionary<long, Tuple<long, long>>();
-        internal static Dictionary<Tuple<long, long>, long> PidOid2Synpid = new Dictionary<Tuple<long, long>, long>();
+        public static Dictionary<long, Tuple<long, long>> Synpid2PidOid = new Dictionary<long, Tuple<long, long>>();
+        public static Dictionary<Tuple<long, long>, long> PidOid2Synpid = new Dictionary<Tuple<long, long>, long>();
         //[rdf:type] => [rdf:type Person], [rdf:type Film]
-        internal static Dictionary<long, HashSet<long>> Pid2Synpids = new Dictionary<long, HashSet<long>>();
+        public static Dictionary<long, HashSet<long>> Pid2Synpids = new Dictionary<long, HashSet<long>>();
 
         public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
         //public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds

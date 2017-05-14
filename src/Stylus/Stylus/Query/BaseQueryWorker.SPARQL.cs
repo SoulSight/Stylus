@@ -35,17 +35,17 @@ namespace Stylus.Query
 
         private Dictionary<long, string> pid2pred = new Dictionary<long, string>();
 
-        public BaseQueryWorker() 
+        public BaseQueryWorker()
         {
             if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
             {
                 // Initialize: LiteralToEid & Statistics
                 LoadLiteralMapping();
-                InitPid2Pred();
             }
 
             Storage = RAMStorage.Singleton;
             CardStatistics = RAMStorage.CardStatistics;
+            InitPid2Pred();
         }
 
         private void AddLiteralMapEntry(string literal, long eid)
@@ -71,7 +71,7 @@ namespace Stylus.Query
             return this.IdToLiteral[tid][index];
         }
 
-        private void LoadLiteralMapping() 
+        private void LoadLiteralMapping()
         {
             // LoadLiteralToEid
             this.LiteralToId = new Dictionary<string, long>();
@@ -85,20 +85,20 @@ namespace Stylus.Query
             IOUtil.LoadEidMapFile((literal, eid) => AddLiteralMapEntry(literal, eid));
         }
 
-        public List<xTwigHead> Plan(QueryGraph qg) 
+        public List<xTwigHead> Plan(QueryGraph qg)
         {
             Dictionary<string, Binding> bindings;
             //var root_order = RootOrderSelection0(qg, CardStatistics, out bindings);
             //var root_order = RootOrderSelection1(qg, CardStatistics, out bindings);
             //var root_order = RootOrderSelection2(qg, CardStatistics, out bindings);
             //var root_order = RootOrderSelection3(qg, CardStatistics, out bindings); 
-            var root_order = RootOrderSelection4(qg, CardStatistics, out bindings); 
+            var root_order = RootOrderSelection4(qg, CardStatistics, out bindings);
             return Decompose(qg, root_order, bindings);
         }
 
         // 0 strategy: first choose the node with minimum cardinality, then flooding the query graph
-        private List<string> RootOrderSelection0(QueryGraph qg, Statistics statistics, 
-            out Dictionary<string, Binding> bindings) 
+        private List<string> RootOrderSelection0(QueryGraph qg, Statistics statistics,
+            out Dictionary<string, Binding> bindings)
         {
             Dictionary<string, double> node_cardinality = new Dictionary<string, double>();
             Dictionary<string, string> superiors = new Dictionary<string, string>();
@@ -151,7 +151,7 @@ namespace Stylus.Query
                         nodes_to_mark.Add(tgt_node);
                         mark_tgt = true;
                     }
-                    else if (!tgt_node.IsVariable) 
+                    else if (!tgt_node.IsVariable)
                     {
                         nodes_to_mark.Add(src_node);
                         mark_tgt = true;
@@ -179,7 +179,7 @@ namespace Stylus.Query
 
             // Update superiors of each node
             HashSet<string> marked_node_names = new HashSet<string>() { min_node_name };
-            while (marked_node_names.Count < nodes_to_mark.Count) 
+            while (marked_node_names.Count < nodes_to_mark.Count)
             {
                 HashSet<string> new_marked_nodes = new HashSet<string>();
                 foreach (var qe in edges_to_mark)
@@ -232,7 +232,7 @@ namespace Stylus.Query
             //HashSet<QueryEdge> query_edges = new HashSet<QueryEdge>(qg.Edges);
             HashSet<string> current = new HashSet<string>(
                 qg.NameToNodes.Where(kvp => nodes_to_mark.Contains(kvp.Value) && superiors[kvp.Key] == null).Select(kvp => kvp.Key));
-            
+
             while (edges_to_mark.Count > 0)
             {
                 HashSet<string> next = new HashSet<string>(
@@ -462,7 +462,7 @@ namespace Stylus.Query
                     marked_node_names.Add(min_u);
                     foreach (var pe in qg.NameToNodes[min_u].ParticipatedEdges)
                     {
-                        if (marked_node_names.Contains(pe.SrcNode.Name) 
+                        if (marked_node_names.Contains(pe.SrcNode.Name)
                             && marked_node_names.Contains(pe.TgtNode.Name))
                         {
                             edges_to_mark.Remove(pe);
@@ -470,7 +470,7 @@ namespace Stylus.Query
                     }
                 }
             }
-            
+
             return roots;
         }
 
@@ -578,11 +578,11 @@ namespace Stylus.Query
                         }
                         var orig_leaf_card = local_card[leaf_name];
                         var new_leaf_card = statistics.EstimateLeafCard(root_card, root_pids, leaf_pid);
-                        
+
                         long rev_leaf_pid = StylusSchema.InvPreds[leaf_pid];
                         new_leaf_card = new_leaf_card * statistics.EstimateRootCard(node_pids[leaf_name]) /
                             statistics.EstimateRootCard(new List<long>() { rev_leaf_pid });
-                        
+
                         if (new_leaf_card < orig_leaf_card)
                         {
                             local_card[leaf_name] = new_leaf_card;
@@ -686,7 +686,7 @@ namespace Stylus.Query
             {
                 // Console.WriteLine("Calculating order: " + string.Join(", ", roots)); // debug
                 Dictionary<string, double> local_card = new Dictionary<string, double>(node_cardinality);
-                
+
                 HashSet<string> processed = new HashSet<string>();
                 foreach (var root in roots)
                 {
@@ -996,12 +996,12 @@ namespace Stylus.Query
                     }
                 }
             }
-            
+
             return min_roots;
         }
 
-        private List<xTwigHead> Decompose(QueryGraph qg, List<string> root_order, 
-            Dictionary<string, Binding> bindings) 
+        private List<xTwigHead> Decompose(QueryGraph qg, List<string> root_order,
+            Dictionary<string, Binding> bindings)
         {
             HashSet<QueryEdge> query_edges = new HashSet<QueryEdge>(qg.Edges);
 
@@ -1030,7 +1030,7 @@ namespace Stylus.Query
                                 head.SelectLeaves.Add(Tuple.Create(label, tgt_node.Name));
                             }
                         }
-                        
+
                         query_edges.Remove(edge);
                     }
                 }
