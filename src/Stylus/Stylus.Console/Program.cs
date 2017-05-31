@@ -455,7 +455,7 @@ namespace Stylus.Console
                     }
                     if (results.Records.Count > 10)
                     {
-                        System.Console.WriteLine((results.Records.Count - 10) + " more...");
+                        System.Console.WriteLine((results.Records.Count - 10) + " ...more");
                     }
                 }
             }
