@@ -1,1 +1,1 @@
-﻿https://www.w3.org/TR/rdf-sparql-query/
+﻿Spec URL: https://www.w3.org/TR/rdf-sparql-query/
