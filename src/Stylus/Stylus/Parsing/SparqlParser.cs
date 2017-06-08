@@ -152,7 +152,7 @@ namespace Stylus.Parsing
                 case TriplePatternType.Path:
                 case TriplePatternType.PropertyFunction:
                 default:
-                    throw new Exception(tp.PatternType.ToString());
+                    throw new NotSupportedException(tp.PatternType.ToString());
             }
         }
 
