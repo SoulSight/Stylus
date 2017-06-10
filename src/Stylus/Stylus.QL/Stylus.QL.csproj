@@ -65,6 +65,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="OpenCypher\CypherSpec.txt" />
     <Content Include="GraphQL\GraphQLSpec.txt" />
     <Content Include="Gremlin\GremlinSpec.txt" />
     <Content Include="SPARQL\SparqlSpec.txt" />
