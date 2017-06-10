@@ -193,6 +193,14 @@ namespace Stylus.Query
             return result;
         }
 
+        private void ThrowIfNoCol(params string[] col_names) 
+        {
+            foreach (var col_name in col_names)
+            {
+                ThrowUtil.ThrowIf(!ContainCol(col_name), "Column not found: " + col_name);
+            }
+        }
+
         public void Filter(Func<long[], bool> func)
         {
             for (int i = 0; i < this.Records.Count; i++)
@@ -208,6 +216,7 @@ namespace Stylus.Query
 
         public void Filter(string col, Func<long, bool> func)
         {
+            ThrowIfNoCol(col);
             int index = this.GetHeadDict()[col];
             for (int i = 0; i < this.Records.Count; i++)
             {
@@ -222,6 +231,8 @@ namespace Stylus.Query
 
         public void Filter(string col1, string col2, Func<long, long, bool> func)
         {
+            ThrowIfNoCol(col1, col2);
+
             int index1 = this.GetHeadDict()[col1];
             int index2 = this.GetHeadDict()[col2];
             for (int i = 0; i < this.Records.Count; i++)
@@ -238,6 +249,8 @@ namespace Stylus.Query
 
         public void Filter(string col1, string col2, string col3, Func<long, long, long, bool> func)
         {
+            ThrowIfNoCol(col1, col2, col3);
+
             int index1 = this.GetHeadDict()[col1];
             int index2 = this.GetHeadDict()[col2];
             int index3 = this.GetHeadDict()[col3];
@@ -271,6 +284,8 @@ namespace Stylus.Query
 
         public QuerySolutions Expand(string col, string expand_col, Func<long, List<long>> expand_op)
         {
+            ThrowIfNoCol(col);
+
             int op_index = this.GetHeadDict()[col];
             QuerySolutions tb = new QuerySolutions();
             tb.Heads = new List<string>(this.Heads);
@@ -339,6 +354,8 @@ namespace Stylus.Query
 
         public void Product(string col, IEnumerable<long> values)
         {
+            ThrowIfNoCol(col);
+
             if (this.Heads.Count == 0)
             {
                 this.Heads = new List<string>() { col };
@@ -403,6 +420,8 @@ namespace Stylus.Query
 
         public QuerySolutions Select(params string[] col_names)
         {
+            ThrowIfNoCol(col_names);
+
             List<int> select_cols = new List<int>(col_names.Select(c => GetHeadDict()[c]));
             QuerySolutions binding = new QuerySolutions();
             binding.Heads = new List<string>(col_names);
@@ -428,6 +447,8 @@ namespace Stylus.Query
 
         public HashSet<long> DistinctValues(string col)
         {
+            ThrowIfNoCol(col);
+
             int index = GetHeadDict()[col];
             return new HashSet<long>(this.Records.Where(r => !Invalid(r)).Select(r => r[index]));
         }
