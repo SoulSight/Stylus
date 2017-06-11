@@ -60,7 +60,7 @@ The key data structure we designed for compact representation of the intermediat
 
 > Currently, Stylus console only handles RDF data sets in NTriples format (support for other formats is coming soon). To configure the distributed Graph Engine cluster, please refer to [geconfig](https://www.graphengine.io/docs/manual/Utilities/geconfig.html) for more details.
 
-Switch to the location of Stylus executable console (compiled from `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data:
+Switch to the location of Stylus executable console (compiled from `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data after setting up the paths:
 
 - `prepare <nt_filename> [<path_to_paired_nt_file>]`: pair the RDF triples
 - `scan <path_to_paired_nt_file>`: generate the xUDT information
@@ -69,7 +69,7 @@ Switch to the location of Stylus executable console (compiled from `src/Stylus/S
 
 
 - Data loading:
-  - Single-machine mode: load the raw file to the storage by `load <path_to_paired_nt_file>` or `loadx <path_to_encoded_file>`
+  - Single-machine mode: load the raw file to the storage by `load <path_to_paired_nt_file>` (type `fast_load <nt_filename> [<path_to_paired_nt_file>]` to execute `prepare`, `scan`, `assign`, and `load` sequentially for convenience) or `loadx <path_to_encoded_file>`
   - Distributed mode: run each server by `start -server` and the proxy by `start -proxy`. After the cluster starts up, run the command on the proxy to load the data in parallel: `dload <path_to_paired_nt_file>` for the raw paired file or `dloadx <path_to_encoded_file>` for the encoded paired file
 
 #### SPARQL Query Executing
