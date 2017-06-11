@@ -354,8 +354,6 @@ namespace Stylus.Query
 
         public void Product(string col, IEnumerable<long> values)
         {
-            ThrowIfNoCol(col);
-
             if (this.Heads.Count == 0)
             {
                 this.Heads = new List<string>() { col };

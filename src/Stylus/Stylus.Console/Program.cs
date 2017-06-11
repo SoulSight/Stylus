@@ -129,14 +129,16 @@ namespace Stylus.Console
             info += "  [-] start -server|-proxy\n";
             info += " +---------------------------\n";
             info += "  [-] prepare <raw_nt_filename> [<paired_filename>]\n";
-            info += "  [-] load <paired_filename>\n";
-            info += "  [-] repo\n";
-            info += "  [-] query <query_filename>\n";
-            info += " +---------------------------\n";
             info += "  [-] scan <paired_filename>\n";
             info += "  [-] assign <paired_filename>\n";
             info += "  [-] encode <paired_filename> <encoded_paired_filename>\n";
+            info += "  [-] load <paired_filename>\n";
             info += "  [-] loadx <encoded_paired_filename>\n";
+            info += " +---------------------------\n";
+            info += "  [-] fast_load <raw_nt_filename> [<paired_filename>]\n";
+            info += " +---------------------------\n";
+            info += "  [-] repo\n";
+            info += "  [-] query <query_filename>\n";
             info += " +---------------------------\n";
             //info += "  [-] convert <file_dir> <output_filename>\n";
             //info += "  [-] dload <paired_filename> <local_storage_dir>\n";
@@ -397,6 +399,34 @@ namespace Stylus.Console
                 case "assign":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     DataScanner.AssignEids(cmd.Parameters[0], sep);
+                    break;
+                case "fast_load":
+                    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                    string srcFilename = cmd.Parameters[0];
+                    string pairedFilename = null;
+                    if (cmd.Parameters.Count < 1)
+                    {
+                        System.Console.WriteLine("Too less params for 'prepare' command.");
+                        break;
+                    }
+                    else if (cmd.Parameters.Count < 2)
+                    {
+                        pairedFilename = srcFilename + ".paired";
+                    }
+                    else if (cmd.Parameters.Count == 2)
+                    {
+                        pairedFilename = cmd.Parameters[1];
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Too many params for 'prepare' command.");
+                        break;
+                    }
+                    System.Console.WriteLine("Paired file save to: " + pairedFilename);
+                    Preprocessor.PrepareFile(srcFilename, pairedFilename, sep);
+                    StylusSchema.ScanFrom(pairedFilename, sep);
+                    DataScanner.AssignEids(pairedFilename, sep);
+                    DataScanner.LoadFile(pairedFilename, sep);
                     break;
                 case "encode":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
