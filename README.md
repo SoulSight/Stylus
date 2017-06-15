@@ -92,4 +92,4 @@ The optional `fix` is set up for fixing the issue of changing the original URI b
 
 Copyright (c) Liang He. All rights reserved.
 
-Licensed under the [MIT](LICENSE.md) License.
+Licensed under the [MIT](LICENSE.txt) License.
