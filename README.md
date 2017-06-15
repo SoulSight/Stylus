@@ -88,3 +88,8 @@ The optional `fix` is set up for fixing the issue of changing the original URI b
 
 [1] A. Lumsdaine, D. Gregor, B. Hendrickson, and J. Berry. **Challenges in parallel graph processing.** Parallel Processing Letters, 17(01), 2007.
 
+## License
+
+Copyright (c) Liang He. All rights reserved.
+
+Licensed under the [MIT](LICENSE.md) License.
