@@ -84,9 +84,6 @@ Switch to the location of Stylus executable console (compiled from `src/Stylus/S
 
 The optional `fix` is set up for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser (for example, for LUBM data sets)
 
-#
-
-[1] A. Lumsdaine, D. Gregor, B. Hendrickson, and J. Berry. **Challenges in parallel graph processing.** Parallel Processing Letters, 17(01), 2007.
 
 ## License
 
