@@ -67,6 +67,14 @@
     <Compile Include="Loading\LoadingEntity.cs" />
     <Compile Include="Query\BaseQueryWorker.Graph.cs" />
     <Compile Include="Query\TwigSolutions.cs" />
+    <Compile Include="Reasoning\BackwardReasoner.cs" />
+    <Compile Include="Reasoning\ForwardReasoner.cs" />
+    <Compile Include="Reasoning\ReteReasoner.cs" />
+    <Compile Include="Reasoning\OwlReasoner.cs" />
+    <Compile Include="Reasoning\RdfsReasoner.cs" />
+    <Compile Include="Reasoning\Reasoner.cs" />
+    <Compile Include="Reasoning\Rule.cs" />
+    <Compile Include="Reasoning\RuleNode.cs" />
     <Compile Include="Util\IOUtil.cs" />
     <Compile Include="Util\ThrowUtil.cs" />
     <Compile Include="Util\TwigUtil.cs" />
