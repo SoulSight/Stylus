@@ -48,7 +48,7 @@ The key data structure we designed for compact representation of the intermediat
 
 
 
-## Stylus Usage Manual
+## Getting Started
 
 #### Dependencies
 
