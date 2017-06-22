@@ -25,7 +25,7 @@ namespace Stylus.Parsing
         {
             if (gp.IsUnion) // Process UNION expression of [?x p1 ?y . ?x p2 ?y . ... ?x pn ?y .]
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException();
             }
 
             // Terminal graph pattern
@@ -38,23 +38,23 @@ namespace Stylus.Parsing
                 }
                 if (gp.IsGraph)
                 {
-                    throw new NotSupportedException("Graph");
+                    throw new NotImplementedException("Graph");
                 }
                 if (gp.IsService)
                 {
-                    throw new NotSupportedException("Service");
+                    throw new NotImplementedException("Service");
                 }
                 if (gp.UnplacedAssignments.Count() > 0)
                 {
-                    throw new NotSupportedException("Assignment");
+                    throw new NotImplementedException("Assignment");
                 }
                 if (gp.IsMinus)
                 {
-                    throw new NotSupportedException("Minus");
+                    throw new NotImplementedException("Minus");
                 }
                 if (gp.IsOptional)
                 {
-                    throw new NotSupportedException("Optional");
+                    throw new NotImplementedException("Optional");
                     #region placeholder
                     //if (gp.IsExists || gp.IsNotExists)
                     //{
@@ -78,7 +78,7 @@ namespace Stylus.Parsing
                 if (gp.HasInlineData)
                 {
                     // qg.AddInlineData(gp.InlineData);
-                    throw new NotSupportedException("Inline Data");
+                    throw new NotImplementedException("Inline Data");
                 }
 
                 // Apply Filters
@@ -86,11 +86,11 @@ namespace Stylus.Parsing
                 {
                     if (gp.IsOptional && !(gp.IsExists || gp.IsNotExists))
                     {
-                        throw new NotSupportedException("Optional"); // placeholder
+                        throw new NotImplementedException("Optional"); // placeholder
                     }
 
                     // subgraph.AddFilter(gp.Filter);
-                    throw new NotSupportedException("Filter");
+                    throw new NotImplementedException("Filter");
                 }
                 return;
             }
@@ -99,13 +99,13 @@ namespace Stylus.Parsing
             if (gp.HasInlineData)
             {
                 // subgraph.AddInlineData(gp.InlineData);
-                throw new NotSupportedException("Inline Data");
+                throw new NotImplementedException("Inline Data");
             }
 
             if (gp.IsFiltered && (gp.Filter != null || gp.UnplacedFilters.Count() > 0))
             {
                 // subgraph.AddFilter(gp.Filter);
-                throw new NotSupportedException("Filter");
+                throw new NotImplementedException("Filter");
             }
 
             if (gp.TriplePatterns.Count > 0)
@@ -152,7 +152,7 @@ namespace Stylus.Parsing
                 case TriplePatternType.Path:
                 case TriplePatternType.PropertyFunction:
                 default:
-                    throw new NotSupportedException(tp.PatternType.ToString());
+                    throw new NotImplementedException(tp.PatternType.ToString());
             }
         }
 
