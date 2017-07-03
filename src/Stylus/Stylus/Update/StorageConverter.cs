@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Stylus.Parsing;
+using Stylus.DataModel;
 
-namespace Stylus.Reasoning
+namespace Stylus.Update
 {
-    public class BackwardReasoner : Reasoner
+    public class StorageConverter
     {
-        public IEnumerable<QueryGraph> Translate(QueryGraph original) 
+        public xEntity Convert(xEntity record, ushort new_tid) 
         {
             throw new NotImplementedException();
         }

@@ -298,10 +298,18 @@ namespace Stylus.Loading
             }
 
             Log.WriteLine(LogLevel.Info, "Load Entity...");
-            foreach (var xentity in EnumerateEntity(rdfFilename, sep))
+
+            ////Linear loading
+            //foreach (var xentity in EnumerateEntity(rdfFilename, sep))
+            //{
+            //    LoadEntity(xentity);
+            //}
+
+            ////Parallel loading
+            Parallel.ForEach(EnumerateEntity(rdfFilename, sep), xentity =>
             {
                 LoadEntity(xentity);
-            }
+            });
 
             Log.WriteLine(LogLevel.Info, "Totol Cell Count: " + Global.LocalStorage.CellCount);
             Global.LocalStorage.SaveStorage();
@@ -314,10 +322,17 @@ namespace Stylus.Loading
             StylusSchema.SaveToStorage();
 
             Log.WriteLine(LogLevel.Info, "Load Encoded Entity...");
-            foreach (var xentity in EnumerateEncodedEntity(encodedFilename, sep))
+            ////Linear loading
+            //foreach (var xentity in EnumerateEncodedEntity(encodedFilename, sep))
+            //{
+            //    LoadEncodedEntity(xentity);
+            //}
+
+            ////Parallel loading
+            Parallel.ForEach(EnumerateEncodedEntity(encodedFilename, sep), xentity =>
             {
                 LoadEncodedEntity(xentity);
-            }
+            });
 
             Log.WriteLine(LogLevel.Info, "Totol Cell Count: " + Global.LocalStorage.CellCount);
             Global.LocalStorage.SaveStorage();
