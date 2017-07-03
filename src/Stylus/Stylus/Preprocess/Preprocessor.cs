@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using Trinity.Diagnostics;
 
 using Stylus.Util;
+using System.Diagnostics;
 
 namespace Stylus.Preprocess
 {
     public class Preprocessor
     {
-        public static void PrepareFile(string inputFilename, string targetFilename, char sep, long bufferSize = 1L << 32) 
+        public static void PrepareFile(string inputFilename, string targetFilename, char sep, long bufferSize) 
         {
             NTripleUtil.FieldSeparator = sep;
             ILineMerger merger = new BinaryMerger();
@@ -33,6 +34,13 @@ namespace Stylus.Preprocess
             File.Delete(mergeFilename);
 
             Log.WriteLine(LogLevel.Info, "Data Prepared.");
+        }
+
+        public static void PrepareFile(string inputFilename, string targetFilename, char sep) 
+        {
+            PerformanceCounter totalAvailableRAMCounter = new PerformanceCounter("Memory", "Available Bytes");
+            long bufferSize = totalAvailableRAMCounter.RawValue * 2 / 3;
+            PrepareFile(inputFilename, targetFilename, sep, bufferSize);
         }
 
         public static void GenerateReverseTripleFile(string inputFilename, string reverseFilename) 
