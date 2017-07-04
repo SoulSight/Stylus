@@ -40,6 +40,8 @@ namespace Stylus.Preprocess
         {
             PerformanceCounter totalAvailableRAMCounter = new PerformanceCounter("Memory", "Available Bytes");
             long bufferSize = totalAvailableRAMCounter.RawValue * 2 / 3;
+            long maxBufferSize = 1L << 33;
+            bufferSize = bufferSize > maxBufferSize ? maxBufferSize : bufferSize;
             PrepareFile(inputFilename, targetFilename, sep, bufferSize);
         }
 
