@@ -130,12 +130,13 @@ namespace Stylus.Console
             info += " +---------------------------\n";
             info += "  [-] prepare <raw_nt_filename> [<paired_filename>]\n";
             info += "  [-] scan <paired_filename>\n";
-            info += "  [-] assign <paired_filename>\n";
-            info += "  [-] encode <paired_filename> <encoded_paired_filename>\n";
+            //info += "  [-] assign <paired_filename>\n";
+            //info += "  [-] encode <paired_filename> <encoded_paired_filename>\n";
             info += "  [-] load <paired_filename>\n";
             info += "  [-] loadx <encoded_paired_filename>\n";
             info += " +---------------------------\n";
-            info += "  [-] fast_load <raw_nt_filename> [<paired_filename>]\n";
+            info += "  [-] scan_load <paired_filename>\n";
+            info += "  [-] prepare_scan_load <raw_nt_filename> [<paired_filename>]\n";
             info += " +---------------------------\n";
             info += "  [-] repo\n";
             info += "  [-] query <query_filename>\n";
@@ -400,14 +401,37 @@ namespace Stylus.Console
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     DataScanner.AssignEids(cmd.Parameters[0], sep);
                     break;
-                case "fast_load":
+                case "scan_load":
+                    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                    string pairedFilename_sl = null;
+                    if (cmd.Parameters.Count < 1)
+                    {
+                        System.Console.WriteLine("Too less params for 'scan_load' command.");
+                        break;
+                    }
+                    else if (cmd.Parameters.Count == 1)
+                    {
+                        pairedFilename_sl = cmd.Parameters[0];
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Too many params for 'prepare' command.");
+                        break;
+                    }
+                    System.Console.WriteLine("Paired file save to: " + pairedFilename_sl);
+                    //Preprocessor.PrepareFile(srcFilename, pairedFilename, sep);
+                    StylusSchema.ScanFrom(pairedFilename_sl, sep);
+                    DataScanner.AssignEids(pairedFilename_sl, sep);
+                    DataScanner.LoadFile(pairedFilename_sl, sep);
                     break;
+                case "prepare_scan_load":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     string srcFilename = cmd.Parameters[0];
                     string pairedFilename = null;
                     if (cmd.Parameters.Count < 1)
                     {
                         System.Console.WriteLine("Too less params for 'prepare' command.");
+                        System.Console.WriteLine("Too less params for 'scan_load' command.");
                         break;
                     }
                     else if (cmd.Parameters.Count < 2)
@@ -417,10 +441,10 @@ namespace Stylus.Console
                     else if (cmd.Parameters.Count == 2)
                     {
                         pairedFilename = cmd.Parameters[1];
+                        pairedFilename = cmd.Parameters[0];
                     }
                     else
                     {
-                        System.Console.WriteLine("Too many params for 'prepare' command.");
                         break;
                     }
                     System.Console.WriteLine("Paired file save to: " + pairedFilename);
