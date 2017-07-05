@@ -401,6 +401,7 @@ namespace Stylus.Console
                     DataScanner.AssignEids(cmd.Parameters[0], sep);
                     break;
                 case "fast_load":
+                    break;
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     string srcFilename = cmd.Parameters[0];
                     string pairedFilename = null;
