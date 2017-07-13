@@ -8,5 +8,9 @@ namespace Stylus.Update
 {
     public class StorageMonitor
     {
+        public static void Start() 
+        {
+            throw new NotImplementedException();
+        }
     }
 }
