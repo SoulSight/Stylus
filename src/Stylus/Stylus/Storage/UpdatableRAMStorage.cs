@@ -12,11 +12,10 @@ using Stylus.DataModel;
 using Stylus.Util;
 using Stylus.Query;
 using System.Threading;
-using Stylus.Update;
 
 namespace Stylus.Storage
 {
-    public class UpdatableRAMStorage : IStorage
+    public class UpdatableRAMStorage : IUpdatableStorage
     {
         Dictionary<ushort, List<long>> tid_instances = new Dictionary<ushort, List<long>>();
 
@@ -762,7 +761,7 @@ namespace Stylus.Storage
 
                                 foreach (var eid in tid_instances[swap_tid])
                                 {
-                                    var new_entity = StorageConverter.ConvertToGeneric(eid, eid);
+                                    var new_entity = StorageMgr.ConvertToGeneric(eid, eid);
                                     Global.LocalStorage.RemoveCell(eid);
                                     Global.LocalStorage.SaveGenericPropEntity(new_entity);
                                 }
@@ -772,7 +771,7 @@ namespace Stylus.Storage
 
                                 foreach (var eid in item.Value)
                                 {
-                                    var xentity = StorageConverter.ConvertFromGeneric(eid, eid, swap_tid);
+                                    var xentity = StorageMgr.ConvertFromGeneric(eid, eid, swap_tid);
                                     Global.LocalStorage.RemoveCell(eid);
                                     Global.LocalStorage.SavexEntity(xentity);
                                 }
@@ -802,14 +801,81 @@ namespace Stylus.Storage
         #region Runtime Update
         private HashSet<long> update_lock_eids = new HashSet<long>();
 
-        public void AddTriples(Tuple<long, long, long> triples) 
+        public void AddTriples(List<Tuple<long, long, long>> triples) 
         {
-            throw new NotImplementedException(); // Todo
+            var entity_data = ToDict(triples);
+
+            while (true)
+            {
+                if (entity_data.All(e => !update_lock_eids.Contains(e.Key)))
+                {
+                    lock (entity_data) // double check
+                    {
+                        if (entity_data.All(e => !update_lock_eids.Contains(e.Key)))
+                        {
+                            foreach (var e in entity_data)
+                            {
+                                update_lock_eids.Add(e.Key);
+                            }
+                            foreach (var e in entity_data)
+                            {
+                                RuntimeUpdater.UpdateEntity(e.Key, e.Value, new Dictionary<long,List<long>>());
+                                update_lock_eids.Remove(e.Key);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        public void RemoveTriples(Tuple<long, long, long> triples) 
+        public void RemoveTriples(List<Tuple<long, long, long>> triples) 
         {
-            throw new NotImplementedException(); // Todo
+            var entity_data = ToDict(triples);
+
+            while (true)
+            {
+                if (entity_data.All(e => !update_lock_eids.Contains(e.Key)))
+                {
+                    lock (entity_data) // double check
+                    {
+                        if (entity_data.All(e => !update_lock_eids.Contains(e.Key)))
+                        {
+                            foreach (var e in entity_data)
+                            {
+                                update_lock_eids.Add(e.Key);
+                            }
+                            foreach (var e in entity_data)
+                            {
+                                RuntimeUpdater.UpdateEntity(e.Key, new Dictionary<long, List<long>>(), e.Value);
+                                update_lock_eids.Remove(e.Key);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private Dictionary<long, Dictionary<long, List<long>>> ToDict(List<Tuple<long, long, long>> triples) 
+        {
+            var entity_data = new Dictionary<long, Dictionary<long, List<long>>>();
+            foreach (var triple in triples)
+            {
+                long s = triple.Item1;
+                long p = triple.Item2;
+                long o = triple.Item3;
+                if (!entity_data.ContainsKey(s))
+                {
+                    entity_data.Add(s, new Dictionary<long,List<long>>());
+                }
+
+                var prop_dict = entity_data[s];
+                if (!prop_dict.ContainsKey(p))
+                {
+                    prop_dict.Add(p, new List<long>());
+                }
+                prop_dict[p].Add(o);
+            }
+            return entity_data;
         }
         #endregion
     }

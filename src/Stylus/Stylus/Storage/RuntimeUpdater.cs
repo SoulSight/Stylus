@@ -9,7 +9,7 @@ using Trinity;
 using Stylus.DataModel;
 using Stylus.Util;
 
-namespace Stylus.Update
+namespace Stylus.Storage
 {
     public class RuntimeUpdater
     {
@@ -56,14 +56,14 @@ namespace Stylus.Update
             if (new_tid == StylusConfig.GenericTid)
             {
                 long new_eid = eid; // Todo: need to change the entity id if the ID-Encoding optimization is enabled
-                var new_entity = StorageConverter.ConvertToGeneric(xentity, new_eid, add_props, remove_props);
+                var new_entity = StorageMgr.ConvertToGeneric(xentity, new_eid, add_props, remove_props);
                 Global.LocalStorage.SaveGenericPropEntity(new_entity);
                 return new_eid;
             }
             else
             {
                 long new_eid = eid; // Todo: need to change the entity id if the ID-Encoding optimization is enabled
-                var new_entity = StorageConverter.Convert(xentity, new_eid, new_tid, add_props, remove_props);
+                var new_entity = StorageMgr.Convert(xentity, new_eid, new_tid, add_props, remove_props);
                 Global.LocalStorage.SavexEntity(new_entity);
                 return new_eid;
             }

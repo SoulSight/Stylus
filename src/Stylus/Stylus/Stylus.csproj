@@ -75,10 +75,11 @@
     <Compile Include="Reasoning\Reasoner.cs" />
     <Compile Include="Reasoning\Rule.cs" />
     <Compile Include="Reasoning\RuleNode.cs" />
+    <Compile Include="Storage\IUpdatableStorage.cs" />
     <Compile Include="Storage\UpdatableRAMStorage.cs" />
     <Compile Include="Util\PriorityQueue.cs" />
-    <Compile Include="Update\RuntimeUpdater.cs" />
-    <Compile Include="Update\StorageConverter.cs" />
+    <Compile Include="Storage\RuntimeUpdater.cs" />
+    <Compile Include="Storage\StorageMgr.cs" />
     <Compile Include="Util\IOUtil.cs" />
     <Compile Include="Util\ThrowUtil.cs" />
     <Compile Include="Util\TwigUtil.cs" />

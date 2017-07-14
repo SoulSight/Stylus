@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Stylus.DataModel;
 using Trinity;
 
-namespace Stylus.Update
+namespace Stylus.Storage
 {
-    public class StorageConverter
+    public class StorageMgr
     {
         public static xEntity Convert(xEntity record, long new_eid, ushort new_tid) 
         {
