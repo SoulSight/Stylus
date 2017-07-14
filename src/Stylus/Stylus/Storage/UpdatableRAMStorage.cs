@@ -11,17 +11,19 @@ using Trinity.TSL.Lib;
 using Stylus.DataModel;
 using Stylus.Util;
 using Stylus.Query;
+using System.Threading;
+using Stylus.Update;
 
 namespace Stylus.Storage
 {
-    public class RAMStorage : IStorage
+    public class UpdatableRAMStorage : IStorage
     {
         Dictionary<ushort, List<long>> tid_instances = new Dictionary<ushort, List<long>>();
 
         // For Synthetic Predicates: t=[..., p_o1, p_o2, ..., p_on, ...] => [p] => [o1, o2, ..., on]
         Dictionary<ushort, Dictionary<long, List<long>>> synpred_tid2pid2oids = new Dictionary<ushort, Dictionary<long, List<long>>>();
 
-        private RAMStorage() 
+        private UpdatableRAMStorage() 
         {
             Log.WriteLine(LogLevel.Info, "Initializing Schema...");
             /// Initialize the Ps & xUDTs
@@ -37,10 +39,10 @@ namespace Stylus.Storage
             Log.WriteLine(LogLevel.Info, "SingleThreadServer Ready.");
         }
 
-        private static RAMStorage storage = new RAMStorage();
+        private static UpdatableRAMStorage storage = new UpdatableRAMStorage();
         private static Statistics cardStatistics = null;
 
-        public static RAMStorage Singleton
+        public static UpdatableRAMStorage Singleton
         {
             get 
             {
@@ -510,6 +512,7 @@ namespace Stylus.Storage
                 return SelectOffsetsToList(eid, offsets);
             }
         }
+
         #endregion
 
         #region Select objects with bindings
@@ -703,6 +706,110 @@ namespace Stylus.Storage
                 List<int> offsets = pids.Select(P => StylusSchema.TidPid2Index[tid][P]).ToList();
                 return SelectOffsetsToList(eid, offsets, bindings);
             }
+        }
+        #endregion
+
+        #region Monitoring xUDTs
+        public void StartMonitor() 
+        {
+            Thread mthread = new Thread(new ThreadStart(Refreshing));
+            mthread.Start();
+        }
+
+        private void Refreshing() 
+        {
+            ushort generic_tid = StylusConfig.GenericTid;
+            while (true)
+            {
+                if (tid_instances.Count >= StylusConfig.MaxXudt && tid_instances.ContainsKey(generic_tid))
+                {
+                    lock (StylusSchema.Locker) // double check
+                    {
+                        if (tid_instances.Count >= StylusConfig.MaxXudt && tid_instances.ContainsKey(generic_tid))
+                        {
+                            PriorityQueue<ushort, int> xudt_cnts = new PriorityQueue<ushort, int>(StylusConfig.MaxXudt);
+                            foreach (var kvp in tid_instances)
+                            {
+                                if (kvp.Key != generic_tid)
+                                {
+                                    xudt_cnts.Enqueue(kvp.Key, kvp.Value.Count);
+                                }
+                            }
+
+                            int least_cnt = xudt_cnts.Peek().Priority;
+
+                            var generic_eids = tid_instances[generic_tid];
+                            Dictionary<string, List<long>> candidate_cnts = new Dictionary<string, List<long>>();
+                            foreach (var eid in generic_eids)
+                            {
+                                string pred_combine_str = GetPredStr(eid);
+                                if (!candidate_cnts.ContainsKey(pred_combine_str))
+                                {
+                                    candidate_cnts[pred_combine_str] = new List<long>();
+                                }
+                                candidate_cnts[pred_combine_str].Add(eid);
+                            }
+
+                            foreach (var item in candidate_cnts.Where(cc => cc.Value.Count > least_cnt))
+                            {
+                                var element = xudt_cnts.Peek();
+                                if (item.Value.Count <= element.Priority)
+                                {
+                                    continue;
+                                }
+                                xudt_cnts.Dequeue();
+                                ushort swap_tid = element.Value;
+
+                                foreach (var eid in tid_instances[swap_tid])
+                                {
+                                    var new_entity = StorageConverter.ConvertToGeneric(eid, eid);
+                                    Global.LocalStorage.RemoveCell(eid);
+                                    Global.LocalStorage.SaveGenericPropEntity(new_entity);
+                                }
+
+                                StylusSchema.Tid2Pids[swap_tid] = item.Key.Split(' ').Select(pidstr => long.Parse(pidstr)).ToList();
+                                StylusSchema.RefreshTPIndex();
+
+                                foreach (var eid in item.Value)
+                                {
+                                    var xentity = StorageConverter.ConvertFromGeneric(eid, eid, swap_tid);
+                                    Global.LocalStorage.RemoveCell(eid);
+                                    Global.LocalStorage.SavexEntity(xentity);
+                                }
+                            }
+                        }
+                    }
+                }
+                Thread.Sleep(StylusConfig.RefreshInterval);
+            }
+        }
+
+        private string GetPredStr(long eid)
+        {
+            List<long> pids = new List<long>();
+            using (var cell = Global.LocalStorage.UseGenericPropEntity(eid))
+            {
+                foreach (var prop in (List<Property>)cell.Props)
+                {
+                    pids.Add(prop.Name);
+                }
+            }
+            pids.Sort();
+            return string.Join(" ", pids);
+        }
+        #endregion
+
+        #region Runtime Update
+        private HashSet<long> update_lock_eids = new HashSet<long>();
+
+        public void AddTriples(Tuple<long, long, long> triples) 
+        {
+            throw new NotImplementedException(); // Todo
+        }
+
+        public void RemoveTriples(Tuple<long, long, long> triples) 
+        {
+            throw new NotImplementedException(); // Todo
         }
         #endregion
     }

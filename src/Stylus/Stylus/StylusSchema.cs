@@ -36,8 +36,10 @@ namespace Stylus
         public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
         //public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds
 
+        public static object Locker = new object();
+
         #region Load Schema
-        private static void RefreshTPIndex() 
+        internal static void RefreshTPIndex() 
         {
             TidPid2Index.Clear();
             PidTid2Index.Clear();
@@ -74,7 +76,7 @@ namespace Stylus
             }
         }
 
-        private static void RefreshSynPIndex() 
+        internal static void RefreshSynPIndex() 
         {
             Synpid2PidOid.Clear();
             PidOid2Synpid.Clear();
@@ -96,7 +98,7 @@ namespace Stylus
             }
         }
 
-        private static void Clear() 
+        internal static void Clear() 
         {
             Tid2Pids.Clear();
             Pred2Pid.Clear();

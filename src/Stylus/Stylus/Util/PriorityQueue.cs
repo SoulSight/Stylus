@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Stylus.Update
+namespace Stylus.Util
 {
     [Serializable]
     [ComVisible(false)]

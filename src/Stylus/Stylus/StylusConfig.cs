@@ -62,5 +62,7 @@ namespace Stylus
             MaxDegreeOfParallelism
                 = Environment.ProcessorCount - 1
         };
+
+        internal static readonly int RefreshInterval = 10000; // milliseconds
     }
 }

@@ -75,9 +75,9 @@
     <Compile Include="Reasoning\Reasoner.cs" />
     <Compile Include="Reasoning\Rule.cs" />
     <Compile Include="Reasoning\RuleNode.cs" />
-    <Compile Include="Update\PriorityQueue.cs" />
+    <Compile Include="Storage\UpdatableRAMStorage.cs" />
+    <Compile Include="Util\PriorityQueue.cs" />
     <Compile Include="Update\RuntimeUpdater.cs" />
-    <Compile Include="Update\StorageMonitor.cs" />
     <Compile Include="Update\StorageConverter.cs" />
     <Compile Include="Util\IOUtil.cs" />
     <Compile Include="Util\ThrowUtil.cs" />

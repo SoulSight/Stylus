@@ -74,9 +74,60 @@ namespace Stylus.Update
             return UpdateEntity(eid, add_props, new Dictionary<long,List<long>>());
         }
 
-        public static long RemoveFromxEntity(long eid, Dictionary<long, List<long>> remove_props) 
+        public static long RemoveFromEntity(long eid, Dictionary<long, List<long>> remove_props) 
         {
             return UpdateEntity(eid, new Dictionary<long, List<long>>(), remove_props);            
+        }
+
+        public static void AddEntity(long eid, Dictionary<long, List<long>> props) 
+        {
+            var tid = GetTid(props.Select(p => p.Key).ToList());
+            if (tid == StylusConfig.GenericTid)
+            {
+                AddGenericEntity(eid, props);
+            }
+            else
+            {
+                AddxUDTEntity(eid, tid, props);
+            }
+        }
+
+        public static void AddGenericEntity(long eid, Dictionary<long, List<long>> props) 
+        {
+            List<Property> properties = new List<Property>();
+            foreach (var pid_oids in props)
+            {
+                properties.Add(new Property(pid_oids.Key, pid_oids.Value));
+            }
+
+            GenericPropEntity gp_entity = new GenericPropEntity(eid, StylusConfig.GenericTid, properties);
+            Global.LocalStorage.SaveGenericPropEntity(gp_entity);
+        }
+
+        public static void AddxUDTEntity(long eid, ushort tid, Dictionary<long, List<long>> props) 
+        {
+            var pids = StylusSchema.Tid2Pids[tid];
+            List<int> offsets = new List<int>();
+            List<long> obj_vals = new List<long>();
+
+            for (int order = 0; order < pids.Count; order++)
+            {
+                var pid = pids[order];
+                // if the pid exists, add all its associated oids; otherwise, repeat the current obj_vals.size
+                if (props.ContainsKey(pid))
+                {
+                    obj_vals.AddRange(props[pid]);
+                }
+                offsets.Add(obj_vals.Count);
+            }
+
+            xEntity xentity = new xEntity(eid, tid, offsets, obj_vals);
+            Global.LocalStorage.SavexEntity(xentity);
+        }
+
+        public static void DeleteEntity(long eid) 
+        {
+            Global.LocalStorage.RemoveCell(eid);
         }
     }
 }
