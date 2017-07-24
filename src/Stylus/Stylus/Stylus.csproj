@@ -65,8 +65,16 @@
     <Compile Include="Distributed\SparqlDataServer.cs" />
     <Compile Include="Loading\DataScanner.cs" />
     <Compile Include="Loading\LoadingEntity.cs" />
-    <Compile Include="Query\BaseQueryWorker.Graph.cs" />
+    <Compile Include="Query\BaseQueryServer.cs" />
+    <Compile Include="Query\BaseQueryWorker.cs" />
+    <Compile Include="Query\BaseQueryWorkerPlus.cs" />
+    <Compile Include="Query\IQueryServer.cs" />
+    <Compile Include="Query\IQueryWorkerPlus.cs" />
+    <Compile Include="Query\ITripleServer.cs" />
+    <Compile Include="Query\LinearQueryWorkerPlus.cs" />
+    <Compile Include="Query\ParallelQueryWorkerPlus.cs" />
     <Compile Include="Query\TwigSolutions.cs" />
+    <Compile Include="Query\xTwigPlus.cs" />
     <Compile Include="Reasoning\BackwardReasoner.cs" />
     <Compile Include="Reasoning\ForwardReasoner.cs" />
     <Compile Include="Reasoning\ReteReasoner.cs" />
@@ -92,7 +100,6 @@
     <Compile Include="Preprocess\Preprocessor.cs" />
     <Compile Include="Preprocess\XPreprocessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\BaseQueryWorker.SPARQL.cs" />
     <Compile Include="Query\Binding.cs" />
     <Compile Include="Query\IQueryWorker.cs" />
     <Compile Include="Query\LinearQueryWorker.cs" />

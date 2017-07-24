@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stylus", "Stylus\Stylus.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stylus.QL", "Stylus.QL\Stylus.QL.csproj", "{771CD974-8E3A-4D7E-AA54-07E0CEF753D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stylus.InferenceEngine", "Stylus.InferenceEngine\Stylus.InferenceEngine.csproj", "{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,16 @@ Global
 		{771CD974-8E3A-4D7E-AA54-07E0CEF753D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{771CD974-8E3A-4D7E-AA54-07E0CEF753D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{771CD974-8E3A-4D7E-AA54-07E0CEF753D6}.Release|x64.ActiveCfg = Release|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,5 +86,6 @@ Global
 		{1EC1AAD7-3DD0-4118-89F7-09B69C05FE8C} = {1F501C7B-B29D-4266-914E-BDC64A394E69}
 		{E8C8E52B-5B9D-4008-A669-AA69C0479395} = {1F501C7B-B29D-4266-914E-BDC64A394E69}
 		{771CD974-8E3A-4D7E-AA54-07E0CEF753D6} = {D9433577-0697-4D57-94BA-55A237BCAD7C}
+		{66263DB0-0C05-45EC-B2E6-B7B3D6F66EB7} = {D9433577-0697-4D57-94BA-55A237BCAD7C}
 	EndGlobalSection
 EndGlobal

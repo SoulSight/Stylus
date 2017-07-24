@@ -371,8 +371,14 @@ namespace Stylus.Console
                     break;
                 case "repo":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-                    TrinityConfig.ReadOnly = true;
                     Global.LocalStorage.LoadStorage();
+                    if (q_server == null)
+                    {
+                        q_server = new ParallelQueryWorker();
+                        //IQueryWorker q_server = new LinearQueryWorker();
+                        //IQueryWorker q_server = new ParallelQueryWorker();
+                        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
+                    }
                     break;
                 case "query":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
@@ -418,11 +424,12 @@ namespace Stylus.Console
                         System.Console.WriteLine("Too many params for 'prepare' command.");
                         break;
                     }
-                    System.Console.WriteLine("Paired file save to: " + pairedFilename_sl);
+                    System.Console.WriteLine("Loading paired file from: " + pairedFilename_sl);
                     //Preprocessor.PrepareFile(srcFilename, pairedFilename, sep);
                     StylusSchema.ScanFrom(pairedFilename_sl, sep);
                     DataScanner.AssignEids(pairedFilename_sl, sep);
                     DataScanner.LoadFile(pairedFilename_sl, sep);
+                    DataScanner.Clear();
                     break;
                 case "prepare_scan_load":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
@@ -452,6 +459,7 @@ namespace Stylus.Console
                     StylusSchema.ScanFrom(pairedFilename, sep);
                     DataScanner.AssignEids(pairedFilename, sep);
                     DataScanner.LoadFile(pairedFilename, sep);
+                    DataScanner.Clear();
                     break;
                 case "encode":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
@@ -489,6 +497,12 @@ namespace Stylus.Console
         {
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.Plan(query);
+            // -- debugging --
+            foreach (var twig in plan)
+            {
+                System.Console.WriteLine(twig.ToBriefString());
+            }
+            // ---------------
             Stopwatch sw = new Stopwatch();
             sw.Start();
             var results = server.Execute(plan);

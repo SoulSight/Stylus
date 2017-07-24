@@ -1,90 +1,19 @@
-﻿using System;
+﻿using Stylus.DataModel;
+using Stylus.Parsing;
+using Stylus.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-
-using Trinity;
-using Trinity.Diagnostics;
-
-using Stylus.Util;
-using Stylus.Storage;
-using Stylus.Parsing;
-using Stylus.DataModel;
 
 namespace Stylus.Query
 {
-    public abstract partial class BaseQueryWorker : IQueryWorker
+    public abstract class BaseQueryWorker : BaseQueryServer, IQueryWorker
     {
-        public IStorage Storage
-        {
-            set;
-            get;
-        }
+        public BaseQueryWorker() : base() { }
 
-        public Statistics CardStatistics { set; get; }
-
-        public Dictionary<string, long> LiteralToId
-        {
-            set;
-            get;
-        }
-
-        private Dictionary<uint, string[]> IdToLiteral;
-
-        private Dictionary<long, string> pid2pred = new Dictionary<long, string>();
-
-        public BaseQueryWorker()
-        {
-            if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
-            {
-                // Initialize: LiteralToEid & Statistics
-                LoadLiteralMapping();
-            }
-
-            Storage = RAMStorage.Singleton;
-            CardStatistics = RAMStorage.CardStatistics;
-            InitPid2Pred();
-        }
-
-        private void AddLiteralMapEntry(string literal, long eid)
-        {
-            this.LiteralToId.Add(literal, eid);
-            ushort tid = TidUtil.GetTid(eid);
-            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
-            this.IdToLiteral[tid][index] = literal;
-        }
-
-        private void InitPid2Pred()
-        {
-            foreach (var item in StylusSchema.Pred2Pid)
-            {
-                this.pid2pred.Add(item.Value, item.Key);
-            }
-        }
-
-        private string GetLiteral(long eid)
-        {
-            ushort tid = TidUtil.GetTid(eid);
-            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
-            return this.IdToLiteral[tid][index];
-        }
-
-        private void LoadLiteralMapping()
-        {
-            // LoadLiteralToEid
-            this.LiteralToId = new Dictionary<string, long>();
-            this.IdToLiteral = new Dictionary<uint, string[]>();
-            foreach (var tid2count in StylusSchema.Tid2Count)
-            {
-                IdToLiteral.Add(tid2count.Key, new string[(int)tid2count.Value]);
-            }
-
-            // IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
-            IOUtil.LoadEidMapFile((literal, eid) => AddLiteralMapEntry(literal, eid));
-        }
-
+        #region IQueryWorker
         public List<xTwigHead> Plan(QueryGraph qg)
         {
             Dictionary<string, Binding> bindings;
@@ -1049,20 +978,6 @@ namespace Stylus.Query
             return heads;
         }
 
-        public abstract bool ContainsBinding(string variable);
-
-        public abstract IEnumerable<long> EnumerateBinding(string variable);
-
-        public abstract Binding GetBinding(string variable);
-
-        public abstract void SetBinding(string variable, Binding binding);
-
-        public abstract void ReplaceBinding(string variable, IEnumerable<long> bindings);
-
-        public abstract void ReplaceBinding(string variable, Binding bindings);
-
-        public abstract void AppendBinding(string variable, IEnumerable<long> bindings);
-
         public abstract List<xTwigAnswer> ExecuteToXTwigAnswer(xTwigHead head);
 
         public abstract TwigAnswers ExecuteToTwigAnswer(xTwigHead head);
@@ -1072,13 +987,6 @@ namespace Stylus.Query
         public abstract QuerySolutions ExecuteSingleTwig(xTwigHead head);
 
         public abstract QuerySolutions Execute(List<xTwigHead> heads);
-
-        public IEnumerable<List<string>> ResolveQuerySolutions(QuerySolutions querySolutions)
-        {
-            foreach (var record in querySolutions.Records)
-            {
-                yield return record.Select(eid => this.GetLiteral(eid)).ToList();
-            }
-        }
+        #endregion
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Stylus.Util;
 using Stylus.DataModel;
+using Trinity.Diagnostics;
 
 namespace Stylus.Query
 {
@@ -172,8 +173,9 @@ namespace Stylus.Query
                 }
                 else
                 {
-                    //List<int> offsets = pids.Select(pid => Schema.TidPid2Index[tid][pid]).ToList();
+                    // List<int> offsets = pids.Select(pid => Schema.TidPid2Index[tid][pid]).ToList();
                     List<int> offsets = new List<int>();
+                    bool contains_all_pids = true;
                     foreach (var pid in pids)
                     {
                         int index;
@@ -183,10 +185,12 @@ namespace Stylus.Query
                         }
                         else
                         {
-                            throw new Exception(pid + " not found in " + tid);
+                            // throw new Exception(pid + " not found in " + tid);
+                            Log.WriteLine(LogLevel.Warning, pid + " not found in " + tid);
+                            contains_all_pids = false;
                         }
                     }
-                    if (eids == null)
+                    if (!contains_all_pids || eids == null)
                     {
                         continue;
                     }

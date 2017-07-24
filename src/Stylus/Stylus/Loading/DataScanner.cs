@@ -392,5 +392,12 @@ namespace Stylus.Loading
                 }
             }
         }
+
+        public static void Clear() 
+        {
+            plist_tid_dict.Clear();
+            literal_to_eid.Clear();
+            tid_cur_pos.Clear();
+        }
     }
 }

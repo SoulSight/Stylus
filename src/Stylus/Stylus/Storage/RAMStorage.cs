@@ -11,6 +11,7 @@ using Trinity.TSL.Lib;
 using Stylus.DataModel;
 using Stylus.Util;
 using Stylus.Query;
+using System.IO;
 
 namespace Stylus.Storage
 {
@@ -58,7 +59,21 @@ namespace Stylus.Storage
             {
                 if (cardStatistics == null)
                 {
-                    cardStatistics = new Statistics(RAMStorage.Singleton);
+                    if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded
+                        && File.Exists(Statistics.GetPersistFilename()))
+                    {
+                        cardStatistics = new Statistics(Statistics.GetPersistFilename());
+                    }
+                    else if (TrinityConfig.CurrentRunningMode == RunningMode.Server
+                        && File.Exists(Statistics.GetClusterPersistFilename()))
+                    {
+                        cardStatistics = new Statistics(Statistics.GetClusterPersistFilename());
+                    }
+                    else
+                    {
+                        cardStatistics = new Statistics(RAMStorage.Singleton);
+                    }
+
                     if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
                     {
                         cardStatistics.SaveToFile();
