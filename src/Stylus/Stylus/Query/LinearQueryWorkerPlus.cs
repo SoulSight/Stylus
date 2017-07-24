@@ -27,6 +27,7 @@ namespace Stylus.Query
                 }
             }
         }
+
         public override Binding GetBinding(string variable)
         {
             Binding b;
@@ -96,7 +97,6 @@ namespace Stylus.Query
                 throw new NotSupportedException();
             }
         }
-
         #endregion
 
         #region BaseQueryWorkerPlus

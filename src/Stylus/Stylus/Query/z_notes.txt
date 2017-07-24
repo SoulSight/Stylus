@@ -1,0 +1,12 @@
+﻿ITripleServer 
+    |-- IQueryServer
+		|-- BaseQueryServer
+	    |-- IQueryWorker
+			|-- BaseQueryServer
+			    |-- LinearQueryWorker
+				|-- ParallelQueryWorker
+				|-- XParalleQueryWorker
+		|-- IQueryWorkerPlus
+	        |-- BaseQueryServerPlus [TODO]
+			    |-- LinearQueryWorkerPlus [TODO]
+				|-- ParallelQueryWorkerPlus [TODO]

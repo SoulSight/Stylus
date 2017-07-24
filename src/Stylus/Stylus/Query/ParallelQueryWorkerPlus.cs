@@ -100,7 +100,6 @@ namespace Stylus.Query
                 throw new NotSupportedException();
             }
         }
-
         #endregion
 
         #region BaseQueryWorkerPlus
