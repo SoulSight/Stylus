@@ -13,9 +13,12 @@ namespace Stylus.Parsing
             this.SelectedVariables = new List<string>();
             this.NameToNodes = new Dictionary<string, QueryNode>();
             this.Edges = new List<QueryEdge>();
+            this.VarPredFreq = new Dictionary<string, int>();
         }
 
         public List<string> SelectedVariables { set; get; }
+
+        public Dictionary<string, int> VarPredFreq { set; get; }
 
         public Dictionary<string, QueryNode> NameToNodes { set; get; }
 
@@ -49,12 +52,37 @@ namespace Stylus.Parsing
 
             NameToNodes[subj].ParticipatedEdges.Add(qe);
             NameToNodes[obj].ParticipatedEdges.Add(qe);
+
+            if (pred.StartsWith("?"))
+            {
+                if (!this.VarPredFreq.ContainsKey(pred))
+                {
+                    this.VarPredFreq.Add(pred, 1);
+                }
+                else
+                {
+                    this.VarPredFreq[pred] += 1;
+                }
+            }
         }
 
         // To be selected for further query processing
         public bool ToSelect(QueryNode node) 
         {
             if (node.ParticipatedEdges.Count > 1 || SelectedVariables.Contains(node.Name))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool ToSelectVarPred(string varPred) 
+        {
+            if (this.VarPredFreq.ContainsKey(varPred) && this.VarPredFreq[varPred] > 1)
+            {
+                return true;
+            }
+            if (this.SelectedVariables.Contains(varPred))
             {
                 return true;
             }
