@@ -13,6 +13,7 @@ namespace Stylus.Query
 {
     public class ParallelQueryWorker : BaseQueryWorker
     {
+        #region Bindings
         private ConcurrentDictionary<string, Binding> query_bindings 
             = new ConcurrentDictionary<string, Binding>();
 
@@ -102,7 +103,9 @@ namespace Stylus.Query
                 throw new NotSupportedException();
             }
         }
+        #endregion
 
+        #region BaseQueryWorker
         public override List<xTwigAnswer> ExecuteToXTwigAnswer(xTwigHead head)
         {
             var root = head.Root;
@@ -542,5 +545,6 @@ namespace Stylus.Query
             });
             return results;
         }
+        #endregion
     }
 }

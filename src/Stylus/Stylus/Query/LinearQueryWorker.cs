@@ -12,6 +12,7 @@ namespace Stylus.Query
 {
     public class LinearQueryWorker : BaseQueryWorker
     {
+        #region Bindings
         private Dictionary<string, Binding> query_bindings 
             = new Dictionary<string,Binding>();
 
@@ -99,7 +100,9 @@ namespace Stylus.Query
                 throw new NotSupportedException();
             }
         }
+        #endregion
 
+        #region BaseQueryWorker
         public override List<xTwigAnswer> ExecuteToXTwigAnswer(xTwigHead head)
         {
             var root = head.Root;
@@ -437,5 +440,6 @@ namespace Stylus.Query
             }
             return results;
         }
+        #endregion
     }
 }
