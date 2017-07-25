@@ -282,11 +282,23 @@ namespace Stylus
         // Regarding Synthetic Predicates: [rdf:type] => [rdf:type_Person], [rdf:type_Film] => Tids
         public static HashSet<ushort> GetUDTsForPid(long pid)
         {
-            HashSet<ushort> contained_tids = new HashSet<ushort>();
             if (!StylusSchema.Pid2Synpids.ContainsKey(pid)) // no synthetic pred for it
             {
-                return new HashSet<ushort>(StylusSchema.PidTid2Index[pid].Keys);
+                if (StylusSchema.PidTid2Index.ContainsKey(pid))
+                {
+                    return new HashSet<ushort>(StylusSchema.PidTid2Index[pid].Keys);
+                }
+                else if (StylusSchema.GenericInclusivePids.Contains(pid))
+                {
+                    return new HashSet<ushort>() { StylusConfig.GenericTid };
+                }
+                else
+                {
+                    return new HashSet<ushort>();
+                }
             }
+
+            HashSet<ushort> contained_tids = new HashSet<ushort>();
             foreach (var synpid in StylusSchema.Pid2Synpids[pid])
             {
                 foreach (var tid in StylusSchema.PidTid2Index[synpid].Keys)

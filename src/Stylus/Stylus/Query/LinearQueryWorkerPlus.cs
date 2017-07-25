@@ -107,7 +107,8 @@ namespace Stylus.Query
 
         public override QuerySolutions ExecuteFlattenPlus(xTwigPlusHead head)
         {
-            throw new NotImplementedException();
+            var results = ExecuteToXTwigAnswerPlus(head);
+            return PruneFlattenPlus(head, results);
         }
 
         public override QuerySolutions ExecuteSingleTwigPlus(xTwigPlusHead head)
@@ -118,6 +119,48 @@ namespace Stylus.Query
         public override QuerySolutions ExecutePlus(List<xTwigPlusHead> heads)
         {
             throw new NotImplementedException();
+        }
+
+        private QuerySolutions PruneFlattenPlus(xTwigPlusHead head, List<xTwigPlusAnswer> answers)
+        {
+            QuerySolutions global_ans = new QuerySolutions();
+            global_ans.Heads.Add(head.Root);
+            global_ans.Heads.AddRange(head.SelectLeaves.Select(l => l.Item2));
+
+            foreach (var ans in answers)
+            {
+                if (!this.query_bindings[head.Root].ContainEid(ans.Root))
+                {
+                    continue;
+                }
+                QuerySolutions local_ans = new QuerySolutions();
+                local_ans.Heads = new List<string>() { head.Root };
+                local_ans.Records = new List<long[]>() { new long[] { ans.Root } };
+                for (int i = 0; i < head.SelectLeaves.Count; i++)
+                {
+                    var leaf = head.SelectLeaves[i].Item2;
+                    local_ans.Product(leaf, this.query_bindings[leaf].FilterEids(ans.Leaves[i]));
+                }
+                global_ans.Records.AddRange(local_ans.Records);
+            }
+            return global_ans;
+        }
+
+        private QuerySolutions FinalJoin(List<QuerySolutions> intermediate_results)
+        {
+            QuerySolutions results = null;
+            for (int i = 0; i < intermediate_results.Count; i++)
+            {
+                if (i == 0)
+                {
+                    results = intermediate_results[i];
+                }
+                else
+                {
+                    results = results.Join(intermediate_results[i]);
+                }
+            }
+            return results;
         }
         #endregion
     }
