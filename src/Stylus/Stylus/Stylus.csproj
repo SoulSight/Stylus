@@ -83,6 +83,7 @@
     <Compile Include="Reasoning\Reasoner.cs" />
     <Compile Include="Reasoning\Rule.cs" />
     <Compile Include="Reasoning\RuleNode.cs" />
+    <Compile Include="Reasoning\RuleType.cs" />
     <Compile Include="Storage\IUpdatableStorage.cs" />
     <Compile Include="Storage\UpdatableRAMStorage.cs" />
     <Compile Include="Util\PriorityQueue.cs" />
