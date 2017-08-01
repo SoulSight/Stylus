@@ -27,6 +27,7 @@ namespace Stylus.Query
             builder.Append("{");
             builder.Append("Root: " + Root + "; ");
             builder.Append("LeavePreds: " + string.Join(", ", LeavePreds) + "; ");
+            builder.Append("SelectVarPreds: " + string.Join(", ", SelectVarPreds) + "; ");
             builder.Append("SelectLeaves: " +
                 string.Join(", ", SelectLeaves.Select(sl => sl.Item1 + "-" + sl.Item2)) + "; ");
             builder.Append("}");

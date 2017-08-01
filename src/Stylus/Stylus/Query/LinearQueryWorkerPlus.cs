@@ -248,13 +248,17 @@ namespace Stylus.Query
                             var kvp_list = new List<KeyValuePair<long, List<long>>>();
                             var p_binding = var_pred_bindings[i].Item1;
                             var o_binding = var_pred_bindings[i].Item2;
-                            foreach (var pid in StylusSchema.GenericInclusivePids)
+                            foreach (var pid in tid_all_pids)
                             {
                                 if (p_binding == null || p_binding.ContainEid(pid))
                                 {
                                     var list = Storage.SelectObjectToList(root_eid, pid, o_binding);
                                     if (is_reverse_s[i])
                                     {
+                                        if (!StylusSchema.InvPreds.ContainsKey(pid))
+                                        {
+                                            continue;
+                                        }
                                         long rev_pid = StylusSchema.InvPreds[pid];
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(rev_pid, list));
                                     }
@@ -315,9 +319,9 @@ namespace Stylus.Query
 
             // update query bindings
             this.query_bindings[root] = new_root_binding;
-            for (int i = 0; i < head.SelectLeaves.Count; i++)
+            for (int i = 0; i < selected_leaves.Count; i++)
             {
-                var sel_var = head.SelectLeaves[i].Item2;
+                var sel_var = selected_leaves[i].Item2;
                 this.query_bindings[sel_var] = new_bindings[i];
             }
 
@@ -574,9 +578,9 @@ namespace Stylus.Query
 
             // update query bindings
             this.query_bindings[root] = new_root_binding;
-            for (int i = 0; i < head.SelectLeaves.Count; i++)
+            for (int i = 0; i < selected_leaves.Count; i++)
             {
-                var sel_var = head.SelectLeaves[i].Item2;
+                var sel_var = selected_leaves[i].Item2;
                 this.query_bindings[sel_var] = new_bindings[i];
             }
 
@@ -776,6 +780,7 @@ namespace Stylus.Query
             QuerySolutions global_ans = new QuerySolutions();
             var selected_var_pred_set = new HashSet<string>(head.SelectVarPreds);
             var selected_leaf_pairs = head.SelectLeaves;
+            var selected_leaves = new List<Tuple<string, string>>();
             global_ans.Heads.Add(head.Root);
 
             // is_select_predicate, is_reverse, pred, obj, p_binding, o_binding
@@ -797,6 +802,7 @@ namespace Stylus.Query
                 else
                 {
                     global_ans.Heads.Add(kvp.Item2);
+                    selected_leaves.Add(kvp);
                 }
             }
 
@@ -810,38 +816,28 @@ namespace Stylus.Query
                 global_ans.Heads.Add(var_pred_objs[i].Item2);
             }
 
+            //Console.WriteLine("global_ans.Heads: [" + string.Join(", ", global_ans.Heads) + "]");
+
             foreach (var ans in answers)
             {
                 if (!this.query_bindings[head.Root].ContainEid(ans.Root))
                 {
                     continue;
                 }
-                QuerySolutions local_ans = new QuerySolutions();
-                local_ans.Heads = new List<string>() { head.Root };
-                local_ans.Records = new List<long[]>() { new long[] { ans.Root } };
-                for (int i = 0; i < head.SelectLeaves.Count; i++)
+
+                IEnumerable<long[]> iter = new List<long[]>() { new long[] { ans.Root } };
+                for (int i = 0; i < selected_leaves.Count; i++)
                 {
-                    var leaf = head.SelectLeaves[i].Item2;
-                    local_ans.Product(leaf, this.query_bindings[leaf].FilterEids(ans.Leaves[i]));
+                    var leaf = selected_leaves[i].Item2;
+                    iter = ListUtil.Extend(iter, this.query_bindings[leaf].FilterEids(ans.Leaves[i]));
                 }
 
-                IEnumerable<long[]> iter = local_ans.Records;
                 for (int i = 0; i < var_pred_len; i++)
                 {
                     var kvps = ans.VarPredLeaves[i];
                     var pred_obj = var_pred_objs[i];
                     if (is_select_preds[i])
                     {
-                        //if (is_reverse_s[i])
-                        //{
-                        //    iter = ListUtil.Extend(iter, kvps.Select(kvp => 
-                        //        new KeyValuePair<long, List<long>>(StylusSchema.InvPreds[kvp.Key], 
-                        //            kvp.Value)));
-                        //}
-                        //else
-                        //{
-                        //    iter = ListUtil.Extend(iter, kvps);
-                        //}
                         iter = ListUtil.Extend(iter, kvps); // reverse the pid in execution
                     }
                     else
@@ -851,6 +847,7 @@ namespace Stylus.Query
                 }
                 global_ans.Records.AddRange(iter);
             }
+
             return global_ans;
         }
 

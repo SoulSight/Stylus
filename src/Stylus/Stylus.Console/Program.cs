@@ -158,6 +158,7 @@ namespace Stylus.Console
 
         private static SparqlParser parser = new SparqlParser();
         private static IQueryWorker q_server = null;
+        private static IQueryWorkerPlus q_server_plus = null;
         static void ExecuteCmd(StylusCommand cmd) 
         {
             char sep = NTripleUtil.FieldSeparator;
@@ -399,6 +400,22 @@ namespace Stylus.Console
                     }
                     Query(q_server, parser, File.ReadAllText(cmd.Parameters[0]));
                     break;
+                case "query_plus":
+                    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
+                    {
+                        parser.FixStrFunc = FixUriString;
+                    }
+                    else
+                    {
+                        parser.FixStrFunc = null;
+                    }
+                    if (q_server_plus == null)
+                    {
+                        q_server_plus = new LinearQueryWorkerPlus();
+                    }
+                    Query(q_server_plus, parser, File.ReadAllText(cmd.Parameters[0]));
+                    break;
                 case "scan":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     StylusSchema.ScanFrom(cmd.Parameters[0], sep);
@@ -497,15 +514,59 @@ namespace Stylus.Console
         {
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.Plan(query);
-            // -- debugging --
-            foreach (var twig in plan)
-            {
-                System.Console.WriteLine(twig.ToBriefString());
-            }
-            // ---------------
+            //// -- debugging --
+            //foreach (var twig in plan)
+            //{
+            //    System.Console.WriteLine(twig.ToBriefString());
+            //}
+            //// ---------------
             Stopwatch sw = new Stopwatch();
             sw.Start();
             var results = server.Execute(plan);
+            sw.Stop();
+            System.Console.WriteLine("=> {0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
+            if (results.Records.Count > 0)
+            {
+                System.Console.WriteLine("[" + string.Join(", ", results.Heads) + "]");
+            }
+
+            if (peak)
+            {
+                int min = Math.Min(results.Records.Count, 10);
+                if (min > 0)
+                {
+                    foreach (var sol in server.ResolveQuerySolutions(results).Take(min))
+                    {
+                        System.Console.WriteLine(string.Join(", ", sol));
+                    }
+                    if (results.Records.Count > 10)
+                    {
+                        System.Console.WriteLine((results.Records.Count - 10) + " ...more");
+                    }
+                }
+            }
+            else
+            {
+                foreach (var sol in server.ResolveQuerySolutions(results))
+                {
+                    System.Console.WriteLine(string.Join(", ", sol));
+                }
+            }
+        }
+        
+        private static void Query(IQueryWorkerPlus server, SparqlParser parser, string query_str, bool peak = true)
+        {
+            var query = parser.ParseQueryFromString(query_str);
+            var plan = server.PlanPlus(query);
+            //// -- debugging --
+            //foreach (var twig in plan)
+            //{
+            //    System.Console.WriteLine(twig.ToBriefString());
+            //}
+            //// ---------------
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var results = server.ExecutePlus(plan);
             sw.Stop();
             System.Console.WriteLine("=> {0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
             if (results.Records.Count > 0)

@@ -61,6 +61,10 @@ namespace Stylus.Query
 
         protected string GetLiteral(long eid)
         {
+            if (pid2pred.ContainsKey(eid)) // test predicate first
+            {
+                return pid2pred[eid];
+            }
             ushort tid = TidUtil.GetTid(eid);
             int index = (int)TidUtil.CloneMaskTid(eid) - 1;
             return this.IdToLiteral[tid][index];
