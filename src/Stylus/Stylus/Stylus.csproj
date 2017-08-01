@@ -90,6 +90,7 @@
     <Compile Include="Storage\RuntimeUpdater.cs" />
     <Compile Include="Storage\StorageMgr.cs" />
     <Compile Include="Util\IOUtil.cs" />
+    <Compile Include="Util\StringUtil.cs" />
     <Compile Include="Util\ThrowUtil.cs" />
     <Compile Include="Util\TwigUtil.cs" />
     <Compile Include="Util\XDictionary.cs" />

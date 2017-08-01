@@ -810,11 +810,11 @@ namespace Stylus.Distributed
             TwigQuery q = new TwigQuery();
             q.Root = head.Root;
             q.Leaves = head.LeavePreds;
-            q.SelectLeavePreds = new List<string>();
+            q.SelectLeaveFixPreds = new List<string>();
             q.SelectLeaveVars = new List<string>();
             foreach (var tuple in head.SelectLeaves)
             {
-                q.SelectLeavePreds.Add(tuple.Item1);
+                q.SelectLeaveFixPreds.Add(tuple.Item1);
                 q.SelectLeaveVars.Add(tuple.Item2);
             }
             q.Bindings = new List<BindingMessage>();

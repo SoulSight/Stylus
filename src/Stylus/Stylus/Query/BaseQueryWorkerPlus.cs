@@ -40,7 +40,7 @@ namespace Stylus.Query
                 string node_name = kvp.Key;
                 superiors.Add(node_name, null);
                 List<long> pids = kvp.Value.GetStarShapePredIncludingSyn()
-                    .Where(str => !str.StartsWith("?") && !str.StartsWith("_?"))
+                    .Where(str => !StringUtil.IsVar(str))
                     .Select(str => StylusSchema.Pred2Pid[str])
                     .ToList();
                 node_pids.Add(node_name, pids);
@@ -125,7 +125,7 @@ namespace Stylus.Query
                                 continue;
                             }
 
-                            if (!pe.Predicate.StartsWith("?")) // Non-variable predicate
+                            if (!StringUtil.IsVar(pe.Predicate)) // Non-variable predicate
                             {
                                 string leaf_name = null;
                                 long leaf_pid = 0;
@@ -216,7 +216,7 @@ namespace Stylus.Query
                             continue;
                         }
 
-                        if (!pe.Predicate.StartsWith("?"))  // Non-variable predicate
+                        if (!StringUtil.IsVar(pe.Predicate))  // Non-variable predicate
                         {
                             string leaf_name = null;
                             long leaf_pid = 0;
@@ -298,7 +298,7 @@ namespace Stylus.Query
                                 continue;
                             }
 
-                            if (!pe.Predicate.StartsWith("?"))  // Non-variable predicate
+                            if (!StringUtil.IsVar(pe.Predicate))  // Non-variable predicate
                             {
                                 string leaf_name = null;
                                 long leaf_pid = 0;
@@ -403,7 +403,7 @@ namespace Stylus.Query
 
                     QueryNode tgt_node = edge.SrcNode == node ? edge.TgtNode : edge.SrcNode;
                     string label = edge.SrcNode == node ? edge.Predicate : "_" + edge.Predicate;
-                    if (edge.Predicate.StartsWith("?"))
+                    if (StringUtil.IsVar(edge.Predicate))
                     {
                         if (qg.ToSelectVarPred(edge.Predicate)) // could have two possible vars: "?x" and "_?x"
                         {
@@ -440,6 +440,8 @@ namespace Stylus.Query
         }
 
         public abstract List<xTwigPlusAnswer> ExecuteToXTwigAnswerPlus(xTwigPlusHead head);
+
+        public abstract TwigAnswers ExecuteToTwigAnswer(xTwigPlusHead head);
 
         public abstract QuerySolutions ExecuteFlattenPlus(xTwigPlusHead head);
 

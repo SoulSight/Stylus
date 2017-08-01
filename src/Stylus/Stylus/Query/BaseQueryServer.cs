@@ -141,7 +141,15 @@ namespace Stylus.Query
         public List<long> GetAllOids(long eid)
         {
             var pids = this.GetPids(eid);
-            return Storage.SelectObjectsToList(eid, pids).SelectMany(l => l).ToList();
+            var forward_pids = pids.Where(pid => StylusSchema.ForwardPids.Contains(pid)).ToList();
+            return Storage.SelectObjectsToList(eid, forward_pids).SelectMany(l => l).ToList();
+        }
+
+        public List<long> GetAllRevOids(long eid)
+        {
+            var pids = this.GetPids(eid);
+            var forward_pids = pids.Where(pid => !StylusSchema.ForwardPids.Contains(pid)).ToList();
+            return Storage.SelectObjectsToList(eid, forward_pids).SelectMany(l => l).ToList();
         }
 
         public IEnumerable<long> GetSids(IEnumerable<long> pids)

@@ -117,10 +117,10 @@ namespace Stylus.Distributed
             head.SelectLeaves = new List<Tuple<string, string>>();
             head.Bindings = new Dictionary<string, Binding>();
 
-            for (int i = 0; i < tq.SelectLeavePreds.Count; i++)
+            for (int i = 0; i < tq.SelectLeaveFixPreds.Count; i++)
             {
                 var variable_name = tq.SelectLeaveVars[i];
-                head.SelectLeaves.Add(Tuple.Create(tq.SelectLeavePreds[i], tq.SelectLeaveVars[i]));
+                head.SelectLeaves.Add(Tuple.Create(tq.SelectLeaveFixPreds[i], tq.SelectLeaveVars[i]));
             }
 
             //var results = worker.ExecuteToXTwigAnswer(head);
@@ -375,9 +375,9 @@ namespace Stylus.Distributed
             xTwigHead head = new xTwigHead();
             head.Root = tq.Root;
             head.SelectLeaves = new List<Tuple<string, string>>();
-            for (int i = 0; i < tq.SelectLeavePreds.Count; i++)
+            for (int i = 0; i < tq.SelectLeaveFixPreds.Count; i++)
             {
-                head.SelectLeaves.Add(Tuple.Create(tq.SelectLeavePreds[i], tq.SelectLeaveVars[i]));
+                head.SelectLeaves.Add(Tuple.Create(tq.SelectLeaveFixPreds[i], tq.SelectLeaveVars[i]));
             }
             return head;
         }

@@ -26,6 +26,8 @@ namespace Stylus.Query
 
         List<long> GetAllOids(long eid);
 
+        List<long> GetAllRevOids(long eid);
+
         IEnumerable<long> GetSids(IEnumerable<long> pids);
 
         IEnumerable<long> GetSids(IEnumerable<string> preds);

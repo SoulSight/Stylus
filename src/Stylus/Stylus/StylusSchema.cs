@@ -23,6 +23,7 @@ namespace Stylus
         public static Dictionary<ushort, Dictionary<long, int>> TidPid2Index = new Dictionary<ushort, Dictionary<long, int>>();
         public static Dictionary<long, Dictionary<ushort, int>> PidTid2Index = new Dictionary<long, Dictionary<ushort, int>>();
         public static HashSet<long> GenericInclusivePids = new HashSet<long>();
+        public static HashSet<long> ForwardPids = new HashSet<long>();
 
         public static Dictionary<long, long> InvPreds = new Dictionary<long, long>();
 
@@ -72,6 +73,15 @@ namespace Stylus
                         }
                         PidTid2Index[p].Add(tid, index);
                     }
+                }
+            }
+
+            ForwardPids.Clear();
+            foreach (var kvp in Pred2Pid)
+            {
+                if (!kvp.Key.StartsWith("_"))
+                {
+                    ForwardPids.Add(kvp.Value);
                 }
             }
         }

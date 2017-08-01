@@ -15,6 +15,8 @@ namespace Stylus.Query
 
         List<xTwigPlusAnswer> ExecuteToXTwigAnswerPlus(xTwigPlusHead head);
 
+        TwigAnswers ExecuteToTwigAnswer(xTwigPlusHead head);
+
         QuerySolutions ExecuteFlattenPlus(xTwigPlusHead head);
 
         QuerySolutions ExecuteSingleTwigPlus(xTwigPlusHead head);

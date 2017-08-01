@@ -1,4 +1,5 @@
-﻿using Stylus.Util;
+﻿using Stylus.DataModel;
+using Stylus.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -104,6 +105,11 @@ namespace Stylus.Query
 
         #region BaseQueryWorkerPlus
         public override List<xTwigPlusAnswer> ExecuteToXTwigAnswerPlus(xTwigPlusHead head)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TwigAnswers ExecuteToTwigAnswer(xTwigPlusHead head)
         {
             throw new NotImplementedException();
         }

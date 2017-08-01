@@ -27,15 +27,23 @@ struct TwigQuery
 {
 	string Root;
 	List<string> Leaves;
-	List<string> SelectLeavePreds;
+	List<string> SelectLeaveVarPreds;
+	List<string> SelectLeaveFixPreds;
 	List<string> SelectLeaveVars;
 	List<BindingMessage> Bindings;
+}
+
+struct VarPredMatch
+{
+	long Pid;
+	List<long> Oids;	
 }
 
 struct TwigAnswer
 {
 	long Root;	
 	List<List<long>> LeaveValues;
+	List<List<VarPredMatch>> LeaveVarValues;
 }
 
 struct TwigAnswers
@@ -55,6 +63,8 @@ struct QueryResults
 	List<string> Variables;	
 	List<List<long>> Records;	
 }
+
+// -------------------------------------------------
 
 struct PreparedQuery
 {
@@ -97,6 +107,8 @@ struct LocalStatInfo
 {
 	List<TidStatInfo> LocalStat;
 }
+
+// -------------------------------------------------
 
 protocol AggregateStatInfo
 {
@@ -222,6 +234,8 @@ protocol FreeQuery
 	Request:QueryInfo;
 	Response:void;	
 }
+
+// -------------------------------------------------
 
 server SparqlDataProxy
 {

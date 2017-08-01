@@ -50,24 +50,17 @@ namespace Stylus.Query
 
     public class xTwigPlusAnswer
     {
-        public xTwigHead Head { set; get; }
+        public xTwigPlusHead Head { set; get; }
 
         public long Root { set; get; }
 
         public List<long[]> Leaves { set; get; }
 
-        public List<VarPredLeaf> VarPredLeaves { set; get; }
+        public List<KeyValuePair<long, List<long>>[]> VarPredLeaves { set; get; }
 
         public bool IsValid()
         {
             return this.Leaves.All(l => l.Length > 0);
         }
-    }
-
-    public class VarPredLeaf
-    {
-        public long Pred { set; get; }
-
-        public List<long> Leaves { set; get; }
     }
 }
