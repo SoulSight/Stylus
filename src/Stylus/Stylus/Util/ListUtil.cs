@@ -125,6 +125,26 @@ namespace Stylus.Util
             }
         }
 
+        // records can be null or empty
+        public static IEnumerable<long[]> ExtendOrFlatten(IEnumerable<long[]> records, IEnumerable<long> list) 
+        {
+            if (records == null || records.Count() == 0)
+            {
+                foreach (var item in list)
+                {
+                    yield return new long[] { item };
+                }
+            }
+            else
+            {
+                var iter = Extend(records, list);
+                foreach (var new_rec in iter)
+                {
+                    yield return new_rec;
+                }
+            }
+        }
+
         public static IEnumerable<long[]> Extend(IEnumerable<long[]> records, 
             IEnumerable<KeyValuePair<long, List<long>>> kvp_list) 
         {
@@ -142,6 +162,29 @@ namespace Stylus.Util
                         new_rec[rec_len + 1] = item;
                         yield return new_rec;
                     }
+                }
+            }
+        }
+
+        public static IEnumerable<long[]> ExtendOrFlatten(IEnumerable<long[]> records, 
+            IEnumerable<KeyValuePair<long, List<long>>> kvp_list)
+        {
+            if (records == null || records.Count() == 0)
+            {
+                foreach (var kvp in kvp_list)
+                {
+                    foreach (var val in kvp.Value)
+                    {
+                        yield return new long[] { kvp.Key, val };
+                    }
+                }
+            }
+            else
+            {
+                var iter = Extend(records, kvp_list);
+                foreach (var new_rec in iter)
+                {
+                    yield return new_rec;
                 }
             }
         }

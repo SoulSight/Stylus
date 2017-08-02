@@ -558,12 +558,12 @@ namespace Stylus.Console
         {
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.PlanPlus(query);
-            //// -- debugging --
+            // -- debugging --
             //foreach (var twig in plan)
             //{
             //    System.Console.WriteLine(twig.ToBriefString());
             //}
-            //// ---------------
+            // ---------------
             Stopwatch sw = new Stopwatch();
             sw.Start();
             var results = server.ExecutePlus(plan);
@@ -571,7 +571,7 @@ namespace Stylus.Console
             System.Console.WriteLine("=> {0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
             if (results.Records.Count > 0)
             {
-                System.Console.WriteLine("[" + string.Join(", ", query.SelectedVariables) + "]");
+                System.Console.WriteLine("[" + string.Join(", ", results.Heads) + "]");
             }
 
             if (peak)
