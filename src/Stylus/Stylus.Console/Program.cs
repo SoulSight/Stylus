@@ -412,7 +412,8 @@ namespace Stylus.Console
                     }
                     if (q_server_plus == null)
                     {
-                        q_server_plus = new LinearQueryWorkerPlus();
+                        // q_server_plus = new LinearQueryWorkerPlus();
+                        q_server_plus = new ParallelQueryWorkerPlus();
                     }
                     Query(q_server_plus, parser, File.ReadAllText(cmd.Parameters[0]));
                     break;
@@ -559,10 +560,11 @@ namespace Stylus.Console
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.PlanPlus(query);
             // -- debugging --
-            //foreach (var twig in plan)
-            //{
-            //    System.Console.WriteLine(twig.ToBriefString());
-            //}
+            foreach (var twig in plan)
+            {
+                //System.Console.WriteLine(twig.ToBriefString());
+                System.Console.WriteLine(twig.ToString());
+            }
             // ---------------
             Stopwatch sw = new Stopwatch();
             sw.Start();

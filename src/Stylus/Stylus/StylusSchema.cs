@@ -37,6 +37,8 @@ namespace Stylus
         public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
         //public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds
 
+        public static Dictionary<long, long> SchemaSynOid2Oid = new Dictionary<long, long>();
+
         public static object Locker = new object();
 
         #region Load Schema
@@ -272,6 +274,11 @@ namespace Stylus
         #region Utils
         public static HashSet<ushort> GetUDTs(IEnumerable<long> pids)
         {
+            if (pids == null || pids.Count() == 0)
+            {
+                return new HashSet<ushort>(StylusSchema.Tid2Pids.Keys);
+            }
+
             HashSet<ushort> sup_types = null;
             foreach (var pid in pids)
             {

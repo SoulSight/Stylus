@@ -41,6 +41,7 @@ namespace Stylus.Query
             this.Storage = RAMStorage.Singleton;
             CardStatistics = RAMStorage.CardStatistics;
             InitPid2Pred();
+            InitSchemaSynOid2Oid();
         }
 
         protected void AddLiteralMapEntry(string literal, long eid)
@@ -56,6 +57,17 @@ namespace Stylus.Query
             foreach (var item in StylusSchema.Pred2Pid)
             {
                 this.pid2pred.Add(item.Value, item.Key);
+            }
+        }
+
+        protected void InitSchemaSynOid2Oid() 
+        {
+            StylusSchema.SchemaSynOid2Oid.Clear();
+            foreach (var synoid in StylusSchema.SynpidPidOids.Select(t => t.Item3))
+            {
+                string uri = this.pid2pred[synoid];
+                long oid = this.LiteralToId[uri];
+                StylusSchema.SchemaSynOid2Oid.Add(synoid, oid);
             }
         }
 

@@ -175,6 +175,10 @@ namespace Stylus.Query
                                 if (p_binding == null || p_binding.ContainEid(pid))
                                 {
                                     var list = Storage.SelectObjectToList(root_eid, pid, o_binding);
+                                    if (list.Count == 0)
+                                    {
+                                        continue;
+                                    }
                                     if (is_reverse_s[i])
                                     {
                                         long rev_pid = StylusSchema.InvPreds[pid];
@@ -254,8 +258,13 @@ namespace Stylus.Query
                                 {
                                     var orig_tuple = StylusSchema.Synpid2PidOid[pid];
                                     long orig_pid = orig_tuple.Item1;
-                                    long orig_oid = orig_tuple.Item2;
-                                    var oid_list = new List<long>(){ orig_oid };
+                                    long orig_oid = orig_tuple.Item2; // the short oid, not the oid in the storage
+                                    long oid = StylusSchema.SchemaSynOid2Oid[orig_oid];
+                                    if (o_binding != null && !o_binding.ContainEid(oid))
+                                    {
+                                        continue;
+                                    }
+                                    var oid_list = new List<long>() { oid };
                                     if (is_reverse_s[i])
                                     {
                                         long rev_pid = StylusSchema.InvPreds[orig_pid];
@@ -271,6 +280,10 @@ namespace Stylus.Query
                                     if (p_binding == null || p_binding.ContainEid(pid))
                                     {
                                         var list = Storage.SelectObjectToList(root_eid, pid, o_binding);
+                                        if (list.Count == 0)
+                                        {
+                                            continue;
+                                        }
                                         if (is_reverse_s[i])
                                         {
                                             if (!StylusSchema.InvPreds.ContainsKey(pid))
@@ -436,6 +449,10 @@ namespace Stylus.Query
                                 if (p_binding == null || p_binding.ContainEid(pid))
                                 {
                                     var list = Storage.SelectObjectToList(root_eid, pid, o_binding);
+                                    if (list.Count == 0)
+                                    {
+                                        continue;
+                                    }
                                     if (is_reverse_s[i])
                                     {
                                         long rev_pid = StylusSchema.InvPreds[pid];
@@ -527,7 +544,14 @@ namespace Stylus.Query
                                     var orig_tuple = StylusSchema.Synpid2PidOid[pid];
                                     long orig_pid = orig_tuple.Item1;
                                     long orig_oid = orig_tuple.Item2;
-                                    var oid_list = new List<long>() { orig_oid };
+
+                                    long oid = StylusSchema.SchemaSynOid2Oid[orig_oid];
+                                    if (o_binding != null && !o_binding.ContainEid(oid))
+                                    {
+                                        continue;
+                                    }
+                                    var oid_list = new List<long>() { oid };
+
                                     if (is_reverse_s[i])
                                     {
                                         long rev_pid = StylusSchema.InvPreds[orig_pid];
@@ -543,6 +567,10 @@ namespace Stylus.Query
                                     if (p_binding == null || p_binding.ContainEid(pid))
                                     {
                                         var list = Storage.SelectObjectToList(root_eid, pid, o_binding);
+                                        if (list.Count == 0)
+                                        {
+                                            continue;
+                                        }
                                         if (is_reverse_s[i])
                                         {
                                             long rev_pid = StylusSchema.InvPreds[pid];
@@ -764,7 +792,12 @@ namespace Stylus.Query
                                     var orig_tuple = StylusSchema.Synpid2PidOid[pid];
                                     long orig_pid = orig_tuple.Item1;
                                     long orig_oid = orig_tuple.Item2;
-                                    var oid_list = new List<long>() { orig_oid };
+                                    long oid = StylusSchema.SchemaSynOid2Oid[orig_oid];
+                                    if (o_binding != null && !o_binding.ContainEid(oid))
+                                    {
+                                        continue;
+                                    }
+                                    var oid_list = new List<long>() { oid };
                                     if (is_reverse_s[i])
                                     {
                                         long rev_pid = StylusSchema.InvPreds[orig_pid];
@@ -780,6 +813,10 @@ namespace Stylus.Query
                                     if (p_binding == null || p_binding.ContainEid(pid))
                                     {
                                         var list = Storage.SelectObjectToList(root_eid, pid, o_binding);
+                                        if (list.Count == 0)
+                                        {
+                                            continue;
+                                        }
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(pid, list));
                                     }
                                 }
@@ -838,7 +875,8 @@ namespace Stylus.Query
                 List<QuerySolutions> prune_flatten_results = new List<QuerySolutions>();
                 for (int i = 0; i < intermediate_results.Count; i++)
                 {
-                    prune_flatten_results.Add(PruneFlattenPlus(heads[i], intermediate_results[i]));
+                    var solutions = PruneFlattenPlus(heads[i], intermediate_results[i]);
+                    prune_flatten_results.Add(solutions);
                 }
 
                 return FinalJoin(prune_flatten_results);
@@ -857,9 +895,14 @@ namespace Stylus.Query
             {
                 global_ans.Heads.Add(head.Root);
             }
+            else
+            {
+                global_ans.Heads = new List<string>();
+            }
 
             // is_select_predicate, is_reverse, pred, obj, p_binding, o_binding
             List<bool> is_select_preds = new List<bool>();
+            List<bool> is_select_objs = new List<bool>();
             List<bool> is_reverse_s = new List<bool>();
             List<Tuple<string, string>> var_pred_objs = new List<Tuple<string, string>>();
 
@@ -870,6 +913,7 @@ namespace Stylus.Query
                     string var_p = kvp.Item1;
                     string var_o = kvp.Item2;
                     is_select_preds.Add(selected_var_pred_set.Contains(var_p));
+                    is_select_objs.Add(StringUtil.IsVar(var_o));
                     is_reverse_s.Add(var_p.StartsWith("_"));
                     var_p = var_p.StartsWith("_") ? var_p.Substring(1) : var_p;
                     var_pred_objs.Add(new Tuple<string, string>(var_p, var_o));
@@ -888,7 +932,10 @@ namespace Stylus.Query
                 {
                     global_ans.Heads.Add(var_pred_objs[i].Item1);
                 }
-                global_ans.Heads.Add(var_pred_objs[i].Item2);
+                if (is_select_objs[i])
+                {
+                    global_ans.Heads.Add(var_pred_objs[i].Item2);
+                }
             }
 
             //Console.WriteLine("global_ans.Heads: [" + string.Join(", ", global_ans.Heads) + "]");
@@ -915,13 +962,23 @@ namespace Stylus.Query
                 {
                     var kvps = ans.VarPredLeaves[i];
                     var pred_obj = var_pred_objs[i];
-                    if (is_select_preds[i])
+                    var pred = pred_obj.Item1;
+                    var obj = pred_obj.Item2;
+                    if (is_select_preds[i] && is_select_objs[i])
                     {
                         iter = ListUtil.ExtendOrFlatten(iter, kvps); // reverse the pid in execution
                     }
-                    else
+                    else if (!is_select_preds[i] && is_select_objs[i])
                     {
                         iter = ListUtil.ExtendOrFlatten(iter, kvps.SelectMany(kvp => kvp.Value));
+                    }
+                    else if (is_select_preds[i] && !is_select_objs[i])
+                    {
+                        iter = ListUtil.ExtendOrFlatten(iter, kvps.Select(kvp => kvp.Key));
+                    }
+                    else
+                    {
+                        // Nothing 
                     }
                 }
                 global_ans.Records.AddRange(iter);
