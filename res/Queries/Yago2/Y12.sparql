@@ -1,0 +1,13 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX y: <http://mpii.de/yago/resource/>
+
+select *
+where { 
+	?s1 y:playsFor ?o .
+	?o y:owns ?s2 .
+	?o y:participatedIn ?s3 .
+	?s3 ?p1 ?s4 .
+	?o ?p2 ?s4 .
+}

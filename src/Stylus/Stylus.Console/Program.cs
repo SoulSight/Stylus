@@ -381,6 +381,15 @@ namespace Stylus.Console
                         //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
                     }
                     break;
+                case "repo_plus":
+                    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                    Global.LocalStorage.LoadStorage();
+                    if (q_server == null)
+                    {
+                        // q_server_plus = new LinearQueryWorkerPlus();
+                        q_server_plus = new ParallelQueryWorkerPlus();
+                    }
+                    break;
                 case "query":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
@@ -562,8 +571,8 @@ namespace Stylus.Console
             // -- debugging --
             foreach (var twig in plan)
             {
-                //System.Console.WriteLine(twig.ToBriefString());
-                System.Console.WriteLine(twig.ToString());
+                System.Console.WriteLine(twig.ToBriefString());
+                //System.Console.WriteLine(twig.ToString());
             }
             // ---------------
             Stopwatch sw = new Stopwatch();
