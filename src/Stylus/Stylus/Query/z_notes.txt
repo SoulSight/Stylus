@@ -7,6 +7,6 @@
 				|-- ParallelQueryWorker
 				|-- XParalleQueryWorker
 		|-- IQueryWorkerPlus
-	        |-- BaseQueryServerPlus [ToTest]
-			    |-- LinearQueryWorkerPlus [ToDo]
-				|-- ParallelQueryWorkerPlus [ToDo]
+	        |-- BaseQueryServerPlus
+			    |-- LinearQueryWorkerPlus
+				|-- ParallelQueryWorkerPlus

@@ -371,45 +371,45 @@ namespace Stylus.Console
                     DataScanner.LoadFile(cmd.Parameters[0], sep);
                     break;
                 case "repo":
+                //    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                //    Global.LocalStorage.LoadStorage();
+                //    if (q_server == null)
+                //    {
+                //        q_server = new ParallelQueryWorker();
+                //        //IQueryWorker q_server = new LinearQueryWorker();
+                //        //IQueryWorker q_server = new ParallelQueryWorker();
+                //        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
+                //    }
+                //    break;
+                //case "repo_plus":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     Global.LocalStorage.LoadStorage();
-                    if (q_server == null)
-                    {
-                        q_server = new ParallelQueryWorker();
-                        //IQueryWorker q_server = new LinearQueryWorker();
-                        //IQueryWorker q_server = new ParallelQueryWorker();
-                        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
-                    }
-                    break;
-                case "repo_plus":
-                    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-                    Global.LocalStorage.LoadStorage();
-                    if (q_server == null)
+                    if (q_server_plus == null)
                     {
                         // q_server_plus = new LinearQueryWorkerPlus();
                         q_server_plus = new ParallelQueryWorkerPlus();
                     }
                     break;
                 case "query":
-                    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-                    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
-                    {
-                        parser.FixStrFunc = FixUriString;
-                    }
-                    else
-                    {
-                        parser.FixStrFunc = null;
-                    }
-                    if (q_server == null)
-                    {
-                        q_server = new ParallelQueryWorker();
-                        //IQueryWorker q_server = new LinearQueryWorker();
-                        //IQueryWorker q_server = new ParallelQueryWorker();
-                        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
-                    }
-                    Query(q_server, parser, File.ReadAllText(cmd.Parameters[0]));
-                    break;
-                case "query_plus":
+                //    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                //    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
+                //    {
+                //        parser.FixStrFunc = FixUriString;
+                //    }
+                //    else
+                //    {
+                //        parser.FixStrFunc = null;
+                //    }
+                //    if (q_server == null)
+                //    {
+                //        q_server = new ParallelQueryWorker();
+                //        //IQueryWorker q_server = new LinearQueryWorker();
+                //        //IQueryWorker q_server = new ParallelQueryWorker();
+                //        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
+                //    }
+                //    Query(q_server, parser, File.ReadAllText(cmd.Parameters[0]));
+                //    break;
+                //case "query_plus":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
                     if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
                     {
@@ -569,11 +569,11 @@ namespace Stylus.Console
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.PlanPlus(query);
             // -- debugging --
-            foreach (var twig in plan)
-            {
-                System.Console.WriteLine(twig.ToBriefString());
-                //System.Console.WriteLine(twig.ToString());
-            }
+            //foreach (var twig in plan)
+            //{
+            //    System.Console.WriteLine(twig.ToBriefString());
+            //    //System.Console.WriteLine(twig.ToString());
+            //}
             // ---------------
             Stopwatch sw = new Stopwatch();
             sw.Start();
