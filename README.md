@@ -10,7 +10,7 @@ Stylus is built on top of a distributed in-memory key-value store that **1)** su
 #### Why a Distributed In-memory Infrastructure
 
 An efficient distributed in-memory key-value store is an essential part of Stylus. On the one hand, efficient parallel processing of large graphs requires an efficient storage infrastructure that supports fast random data
-access of the graph data [1] and the main memory (RAM) is still the most viable approach to fast random access. On the other hand, the ever growing size of knowledge requires scalable solutions and distributed systems built using commodity servers are usually more economical and easier to maintain compared with scale-up approaches. Particularly, we build our RDF store on top of [Microsoft Trinity Graph Engine](https://www.graphengine.io/), which well meet the requirements discussed above.
+access of the graph data [1] and the main memory (RAM) is still the most viable approach to fast random access. On the other hand, the ever growing size of knowledge requires scalable solutions and distributed systems built using commodity servers are usually more economical and easier to maintain compared with scale-up approaches. Particularly, we build our RDF store on top of [Graph Engine](https://www.graphengine.io/), which well meet the requirements discussed above.
 
 #### Why a Strongly-Typed Storage Scheme
 
@@ -53,7 +53,7 @@ The key data structure we designed for compact representation of the intermediat
 #### Dependencies
 
 - Platform `.Net 4.5`
-- Graph Engine >= 1.0.8482
+- Graph Engine = 1.0.8482
 - dotNetRDF >= 1.0.12
 
 #### RDF Data Preparing & Loading
@@ -84,6 +84,9 @@ Switch to the location of Stylus executable console (compiled from `src/Stylus/S
 
 The optional `fix` is set up for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser (for example, for LUBM data sets)
 
+## Statement & Future Work
+
+This is the major code repository for the paper titled _Stylus: A Strongly-Typed Store for Serving Massive RDF Data_. A more light-weight, user-friendly knowledge serving system can be expected. Further updates on this line will appear in the repository of [Graph Engine](https://github.com/Microsoft/GraphEngine).
 
 ## License
 
