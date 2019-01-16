@@ -10,7 +10,7 @@ Stylus is built on top of a distributed in-memory key-value store that **1)** su
 #### Why a Distributed In-memory Infrastructure
 
 An efficient distributed in-memory key-value store is an essential part of Stylus. On the one hand, efficient parallel processing of large graphs requires an efficient storage infrastructure that supports fast random data
-access of the graph data [1] and the main memory (RAM) is still the most viable approach to fast random access. On the other hand, the ever growing size of knowledge requires scalable solutions and distributed systems built using commodity servers are usually more economical and easier to maintain compared with scale-up approaches. Particularly, we build our RDF store on top of [Graph Engine](https://www.graphengine.io/), which well meet the requirements discussed above.
+access of the graph data and the main memory (RAM) is still the most viable approach to fast random access. On the other hand, the ever growing size of knowledge requires scalable solutions and distributed systems built using commodity servers are usually more economical and easier to maintain compared with scale-up approaches. Particularly, we build our RDF store on top of [Graph Engine](https://www.graphengine.io/), which well meet the requirements discussed above.
 
 #### Why a Strongly-Typed Storage Scheme
 
@@ -58,7 +58,7 @@ The key data structure we designed for compact representation of the intermediat
 
 #### RDF Data Preparing & Loading
 
-> Currently, Stylus console only handles RDF data sets in NTriples format (support for other formats is coming soon). To configure the distributed Graph Engine cluster, please refer to [geconfig](https://www.graphengine.io/docs/manual/Utilities/geconfig.html) for more details.
+> Currently, Stylus console only handles RDF data sets in NTriples format. To configure the distributed Graph Engine cluster, please refer to [geconfig](https://www.graphengine.io/docs/manual/Utilities/geconfig.html) for more details.
 
 Switch to the location of Stylus executable console (compiled from `src/Stylus/Stylus.Tools.sln`), and run `Stylus.Console.exe`. Then execute these commands to prepare the data after setting up the paths:
 
