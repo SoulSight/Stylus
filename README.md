@@ -84,7 +84,7 @@ Switch to the location of Stylus executable console (compiled from `src/Stylus/S
 
 The optional `fix` is set up for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser (for example, for LUBM data sets)
 
-## Statement & Future Work
+## Statement & Further Updates
 
 This is the major code repository for the paper titled _Stylus: A Strongly-Typed Store for Serving Massive RDF Data_. A more light-weight, user-friendly knowledge serving system can be expected. Further updates on this line will appear in the repository of [Graph Engine](https://github.com/Microsoft/GraphEngine).
 
