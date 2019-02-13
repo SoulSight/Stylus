@@ -76,13 +76,13 @@ Switch to the location of Stylus executable console (compiled from `src/Stylus/S
 
 - Single-machine mode
 
-  Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [fix]`
+  Reload the storage image from disk by `repo`, and query the storage by `query <path_to_sparql_query_file> [top] [fix]`
 
 - Distributed Mode
 
   Reload the storage image from disk by `drepo`, and query the storage by `dquery <path_to_sparql_query_file> [fix]`. 
 
-The optional `fix` is set up for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser (for example, for LUBM data sets)
+The optional `top` is set up to limit the count of the displayed results (all results by default) and the optional `fix` is set up for fixing the issue of changing the original URI by the dotNetRDF SPARQL parser (for example, for LUBM data sets).
 
 ## Statement & Further Updates
 

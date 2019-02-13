@@ -385,27 +385,28 @@ namespace Stylus.Console
                     }
                     break;
                 case "query":
-                //    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-                //    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
-                //    {
-                //        parser.FixStrFunc = FixUriString;
-                //    }
-                //    else
-                //    {
-                //        parser.FixStrFunc = null;
-                //    }
-                //    if (q_server == null)
-                //    {
-                //        q_server = new ParallelQueryWorker();
-                //        //IQueryWorker q_server = new LinearQueryWorker();
-                //        //IQueryWorker q_server = new ParallelQueryWorker();
-                //        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
-                //    }
-                //    Query(q_server, parser, File.ReadAllText(cmd.Parameters[0]));
-                //    break;
-                //case "query_plus":
+                    //    TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
+                    //    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
+                    //    {
+                    //        parser.FixStrFunc = FixUriString;
+                    //    }
+                    //    else
+                    //    {
+                    //        parser.FixStrFunc = null;
+                    //    }
+                    //    if (q_server == null)
+                    //    {
+                    //        q_server = new ParallelQueryWorker();
+                    //        //IQueryWorker q_server = new LinearQueryWorker();
+                    //        //IQueryWorker q_server = new ParallelQueryWorker();
+                    //        //IQueryWorker q_server = new XParallelQueryWorker(); // some issues
+                    //    }
+                    //    Query(q_server, parser, File.ReadAllText(cmd.Parameters[0]));
+                    //    break;
+                    //case "query_plus":
+                    var auxParamList = cmd.Parameters.Skip(1).Select(p => p.ToLower()).ToList();
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-                    if (cmd.Parameters.Count > 1 && cmd.Parameters[1] == "fix")
+                    if (auxParamList.Count > 0 && auxParamList.Contains("fix"))
                     {
                         parser.FixStrFunc = FixUriString;
                     }
@@ -418,7 +419,7 @@ namespace Stylus.Console
                         // q_server_plus = new LinearQueryWorkerPlus();
                         q_server_plus = new ParallelQueryWorkerPlus();
                     }
-                    Query(q_server_plus, parser, File.ReadAllText(cmd.Parameters[0]), cmd.Parameters.Count >= 2 && cmd.Parameters[1].ToLower() == "top");
+                    Query(q_server_plus, parser, File.ReadAllText(cmd.Parameters[0]), auxParamList.Count > 0 && auxParamList.Contains("top"));
                     break;
                 case "scan":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
