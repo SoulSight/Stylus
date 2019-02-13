@@ -32,6 +32,8 @@ namespace Stylus.Query
             this.Records = new List<long[]>(other.Records);
         }
 
+        public List<string> VarHeads { get { return this.Heads.Where(h => StringUtil.IsVar(h)).ToList(); } }
+
         public void AppendRecord(long[] tuple)
         {
             this.Records.Add(tuple);
@@ -416,7 +418,7 @@ namespace Stylus.Query
             return GetHeadDict().ContainsKey(col_name);
         }
 
-        public QuerySolutions Select(params string[] col_names)
+        public QuerySolutions Select(string[] col_names)
         {
             ThrowIfNoCol(col_names);
 
@@ -441,6 +443,37 @@ namespace Stylus.Query
                 binding.AppendRecord(select_record);
             }
             return binding;
+        }
+
+        public IEnumerable<long[]> Enumerate(string[] col_names)
+        {
+            ThrowIfNoCol(col_names);
+
+            List<int> select_cols = new List<int>(col_names.Select(c => GetHeadDict()[c]));
+            QuerySolutions binding = new QuerySolutions();
+            binding.Heads = new List<string>(col_names);
+
+            int len = select_cols.Count;
+            foreach (var record in this.Records)
+            {
+                if (Invalid(record))
+                {
+                    continue;
+                }
+                long[] select_record = new long[len];
+
+                for (int i = 0; i < len; i++)
+                {
+                    select_record[i] = record[select_cols[i]];
+                }
+
+                yield return select_record;
+            }
+        }
+
+        public IEnumerable<long[]> EnumerateVars()
+        {
+            return Enumerate(this.Heads.Where(h => StringUtil.IsVar(h)).ToArray());
         }
 
         public HashSet<long> DistinctValues(string col)

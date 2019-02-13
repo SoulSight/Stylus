@@ -34,8 +34,8 @@ namespace Stylus
         //[rdf:type] => [rdf:type Person], [rdf:type Film]
         public static Dictionary<long, HashSet<long>> Pid2Synpids = new Dictionary<long, HashSet<long>>();
 
-        public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
-        //public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds
+        // public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
+        public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds
 
         public static Dictionary<long, long> SchemaSynOid2Oid = new Dictionary<long, long>();
 
@@ -77,7 +77,10 @@ namespace Stylus
                     }
                 }
             }
+        }
 
+        internal static void RefreshForwardPids()
+        {
             ForwardPids.Clear();
             foreach (var kvp in Pred2Pid)
             {
@@ -169,6 +172,8 @@ namespace Stylus
             RefreshTPIndex();
 
             LoadPredInfo();
+
+            RefreshForwardPids();
         }
 
         public static void LoadFromStorage()
@@ -198,6 +203,8 @@ namespace Stylus
             }
 
             LoadPredInfo();
+
+            RefreshForwardPids();
         }
 
         private static void LoadPredInfo()

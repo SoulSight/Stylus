@@ -218,6 +218,11 @@ namespace Stylus.Query
 
         public double EstimateLeafCard(double root_cardinality, ushort tid, long pid) 
         {
+            if (!Tid2Pid2OidSel.ContainsKey(tid) || !Tid2Pid2OidSel[tid].ContainsKey(pid))
+            {
+                // Console.WriteLine(" < Warn > Statistics not found: tid = [" + tid + "], pid = [" + pid + "]");
+                return 0.0;
+            }
             return root_cardinality * Tid2Pid2OidSel[tid][pid];
         }
 

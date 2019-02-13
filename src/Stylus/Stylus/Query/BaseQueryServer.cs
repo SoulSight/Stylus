@@ -32,13 +32,14 @@ namespace Stylus.Query
 
         public BaseQueryServer()
         {
+            this.Storage = RAMStorage.Singleton;
+
             if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
             {
                 // Initialize: LiteralToEid & Statistics
                 LoadLiteralMapping();
             }
 
-            this.Storage = RAMStorage.Singleton;
             CardStatistics = RAMStorage.CardStatistics;
             InitPid2Pred();
             InitSchemaSynOid2Oid();
@@ -224,7 +225,7 @@ namespace Stylus.Query
 
         public IEnumerable<List<string>> ResolveQuerySolutions(QuerySolutions querySolutions)
         {
-            foreach (var record in querySolutions.Records)
+            foreach (var record in querySolutions.EnumerateVars())
             {
                 yield return record.Select(eid => this.GetLiteral(eid)).ToList();
             }

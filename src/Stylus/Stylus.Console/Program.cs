@@ -36,13 +36,10 @@ namespace Stylus.Console
                 }
                 TrinityConfig.StorageRoot = args[0];
                 StylusConfig.SetStoreMetaRootDir(args[1]);
-                bool unfold_isa;
-                if (bool.TryParse(args[2], out unfold_isa))
+                bool combine_isa;
+                if (bool.TryParse(args[2], out combine_isa))
                 {
-                    if (!unfold_isa)
-                    {
-                        StylusSchema.PredCandidatesForSynPred = new HashSet<string>();
-                    }
+                    StylusConfig.CombineIsA = combine_isa;
                 }
                 else
                 {
@@ -56,7 +53,7 @@ namespace Stylus.Console
                 System.Console.WriteLine();
                 System.Console.WriteLine("=> " + StylusConsoleTerm.StorageRootName + ": " + TrinityConfig.StorageRoot);
                 System.Console.WriteLine("=> " + StylusConsoleTerm.MetadataRootName + ": " + StylusConfig.GetStoreMetaRootDir());
-                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
+                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusConfig.CombineIsA);
                 System.Console.WriteLine();
                 
                 System.Console.ForegroundColor = backup_foreground_color;
@@ -130,7 +127,7 @@ namespace Stylus.Console
             info += " +---------------------------\n";
             info += "  [-] prepare <raw_nt_filename> [<paired_filename>]\n";
             info += "  [-] scan <paired_filename>\n";
-            //info += "  [-] assign <paired_filename>\n";
+            info += "  [-] assign <paired_filename>\n";
             //info += "  [-] encode <paired_filename> <encoded_paired_filename>\n";
             info += "  [-] load <paired_filename>\n";
             info += "  [-] loadx <encoded_paired_filename>\n";
@@ -139,7 +136,7 @@ namespace Stylus.Console
             info += "  [-] prepare_scan_load <raw_nt_filename> [<paired_filename>]\n";
             info += " +---------------------------\n";
             info += "  [-] repo\n";
-            info += "  [-] query <query_filename>\n";
+            info += "  [-] query <query_filename> [top]\n";
             info += " +---------------------------\n";
             //info += "  [-] convert <file_dir> <output_filename>\n";
             //info += "  [-] dload <paired_filename> <local_storage_dir>\n";
@@ -185,10 +182,7 @@ namespace Stylus.Console
                                 bool combine_all_isA;
                                 if (bool.TryParse(cmd.Parameters[1], out combine_all_isA))
                                 {
-                                    if (!combine_all_isA)
-                                    {
-                                        StylusSchema.PredCandidatesForSynPred = new HashSet<string>();
-                                    }
+                                    StylusConfig.CombineIsA = combine_all_isA;
                                 }
                                 else
                                 {
@@ -424,7 +418,7 @@ namespace Stylus.Console
                         // q_server_plus = new LinearQueryWorkerPlus();
                         q_server_plus = new ParallelQueryWorkerPlus();
                     }
-                    Query(q_server_plus, parser, File.ReadAllText(cmd.Parameters[0]));
+                    Query(q_server_plus, parser, File.ReadAllText(cmd.Parameters[0]), cmd.Parameters.Count >= 2 && cmd.Parameters[1].ToLower() == "top");
                     break;
                 case "scan":
                     TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
@@ -524,6 +518,11 @@ namespace Stylus.Console
         {
             var query = parser.ParseQueryFromString(query_str);
             var plan = server.Plan(query);
+            if (plan == null)
+            {
+                System.Console.WriteLine("=> 0 results, 0.0 ms");
+                return;
+            }
             //// -- debugging --
             //foreach (var twig in plan)
             //{
@@ -537,7 +536,7 @@ namespace Stylus.Console
             System.Console.WriteLine("=> {0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
             if (results.Records.Count > 0)
             {
-                System.Console.WriteLine("[" + string.Join(", ", results.Heads) + "]");
+                System.Console.WriteLine("[" + string.Join(", ", results.VarHeads) + "]");
             }
 
             if (peak)
@@ -567,14 +566,20 @@ namespace Stylus.Console
         private static void Query(IQueryWorkerPlus server, SparqlParser parser, string query_str, bool peak = true)
         {
             var query = parser.ParseQueryFromString(query_str);
-            var plan = server.PlanPlus(query);
-            // -- debugging --
+            List<xTwigPlusHead> plan = server.PlanPlus(query);
+
+            if (plan == null)
+            {
+                System.Console.WriteLine("=> 0 results, 0.0 ms");
+                return;
+            }
+            //--debugging--
             //foreach (var twig in plan)
             //{
             //    System.Console.WriteLine(twig.ToBriefString());
             //    //System.Console.WriteLine(twig.ToString());
             //}
-            // ---------------
+            //---------------
             Stopwatch sw = new Stopwatch();
             sw.Start();
             var results = server.ExecutePlus(plan);
@@ -582,7 +587,7 @@ namespace Stylus.Console
             System.Console.WriteLine("=> {0} results, {1} ms", results.Records.Count, sw.Elapsed.TotalMilliseconds);
             if (results.Records.Count > 0)
             {
-                System.Console.WriteLine("[" + string.Join(", ", results.Heads) + "]");
+                System.Console.WriteLine("[" + string.Join(", ", results.VarHeads) + "]");
             }
 
             if (peak)

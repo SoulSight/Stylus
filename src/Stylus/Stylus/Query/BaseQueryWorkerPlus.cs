@@ -22,6 +22,10 @@ namespace Stylus.Query
         {
             Dictionary<string, Binding> bindings;
             var root_order = RootOrderSelection(qg, CardStatistics, out bindings);
+            if (root_order == null)
+            {
+                return null;
+            }
             return Decompose(qg, root_order, bindings);
         }
 
@@ -39,10 +43,41 @@ namespace Stylus.Query
             {
                 string node_name = kvp.Key;
                 superiors.Add(node_name, null);
-                List<long> pids = kvp.Value.GetStarShapePredIncludingSyn()
-                    .Where(str => !StringUtil.IsVar(str))
-                    .Select(str => StylusSchema.Pred2Pid[str])
-                    .ToList();
+
+                //List<long> pids = kvp.Value.GetStarShapePredIncludingSyn()
+                //    .Where(str => !StringUtil.IsVar(str))
+                //    .Select(str =>
+                //    {
+                //        if (!StylusSchema.Pred2Pid.ContainsKey(str))
+                //        {
+                //            // Console.WriteLine("Predicate not found: {0}", str);
+                //            throw new Exception("Predicate not found: " + str);
+                //        }
+                //        return StylusSchema.Pred2Pid[str];
+                //    })
+                //    .ToList();
+
+                List<long> pids = null;
+                var preds = kvp.Value.GetStarShapePredIncludingSyn()
+                    .Where(str => !StringUtil.IsVar(str)).ToList();
+                if (preds.All(pred => StylusSchema.Pred2Pid.ContainsKey(pred)))
+                {
+                    pids = preds.Select(str => StylusSchema.Pred2Pid[str]).ToList();
+                }
+                else
+                {
+#if DEBUG
+                    preds.ForEach(pred => 
+                    {
+                        if (!StylusSchema.Pred2Pid.ContainsKey(pred))
+                        {
+                            Console.WriteLine(" < Warn > Predicate not contained in the data: " + pred);
+                        }
+                    });
+#endif
+                    return null;
+                }
+
                 node_pids.Add(node_name, pids);
                 double card = kvp.Value.IsVariable ? statistics.EstimateRootCard(pids) : 1.0;
                 node_cardinality.Add(node_name, card);
@@ -448,6 +483,6 @@ namespace Stylus.Query
         public abstract QuerySolutions ExecuteSingleTwigPlus(xTwigPlusHead head);
 
         public abstract QuerySolutions ExecutePlus(List<xTwigPlusHead> heads);
-        #endregion
+#endregion
     }
 }

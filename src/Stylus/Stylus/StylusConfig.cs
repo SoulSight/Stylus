@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stylus.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,6 +57,26 @@ namespace Stylus
         }
 
         public static int MaxXudt { set { max_xudt = value; } get { return max_xudt; } }
+
+
+        public static bool CombineIsA
+        {
+            set
+            {
+                if (value)
+                {
+                    StylusSchema.PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
+                }
+                else
+                {
+                    StylusSchema.PredCandidatesForSynPred = new HashSet<string>();
+                }
+            }
+            get
+            {
+                return StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType);
+            }
+        }
 
         public static ParallelOptions DegreeOfParallelismOption = new ParallelOptions
         {

@@ -187,11 +187,23 @@ namespace Stylus.Query
                                     }
                                     if (is_reverse_s[i])
                                     {
+                                        /////
+                                        if (StylusSchema.ForwardPids.Contains(pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         long rev_pid = StylusSchema.InvPreds[pid];
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(rev_pid, list));
                                     }
                                     else
                                     {
+                                        /////
+                                        if (!StylusSchema.ForwardPids.Contains(pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(pid, list));
                                     }
                                 }
@@ -257,7 +269,20 @@ namespace Stylus.Query
                 }
                 else
                 {
-                    List<int> offsets = pids.Select(pid => StylusSchema.TidPid2Index[tid][pid]).ToList();
+                    List<int> offsets = pids.Select(pid =>
+                    {
+                        if (!StylusSchema.TidPid2Index[tid].ContainsKey(pid))
+                        {
+                            return -1;
+                        }
+                        return StylusSchema.TidPid2Index[tid][pid];
+                    }).ToList();
+
+                    if (offsets.Contains(-1))
+                    {
+                        continue;
+                    }
+
                     var tid_all_pids = StylusSchema.Tid2Pids[tid];
 
                     //foreach (var root_eid in eids)
@@ -286,11 +311,23 @@ namespace Stylus.Query
                                     var oid_list = new List<long>() { oid };
                                     if (is_reverse_s[i])
                                     {
+                                        /////
+                                        if (StylusSchema.ForwardPids.Contains(orig_pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         long rev_pid = StylusSchema.InvPreds[orig_pid];
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(rev_pid, oid_list));
                                     }
                                     else
                                     {
+                                        /////
+                                        if (!StylusSchema.ForwardPids.Contains(orig_pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(orig_pid, oid_list));
                                     }
                                 }
@@ -305,6 +342,12 @@ namespace Stylus.Query
                                         }
                                         if (is_reverse_s[i])
                                         {
+                                            /////
+                                            if (StylusSchema.ForwardPids.Contains(pid))
+                                            {
+                                                continue;
+                                            }
+                                            /////
                                             if (!StylusSchema.InvPreds.ContainsKey(pid))
                                             {
                                                 continue;
@@ -314,6 +357,12 @@ namespace Stylus.Query
                                         }
                                         else
                                         {
+                                            /////
+                                            if (!StylusSchema.ForwardPids.Contains(pid))
+                                            {
+                                                continue;
+                                            }
+                                            /////
                                             kvp_list.Add(new KeyValuePair<long, List<long>>(pid, list));
                                         }
                                     }
@@ -487,11 +536,23 @@ namespace Stylus.Query
                                     }
                                     if (is_reverse_s[i])
                                     {
+                                        /////
+                                        if (StylusSchema.ForwardPids.Contains(pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         long rev_pid = StylusSchema.InvPreds[pid];
                                         var_pred_match_list.Add(new KeyValuePair<long, List<long>>(rev_pid, list));
                                     }
                                     else
                                     {
+                                        /////
+                                        if (!StylusSchema.ForwardPids.Contains(pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         var_pred_match_list.Add(new KeyValuePair<long, List<long>>(pid, list));
                                     }
                                 }
@@ -615,11 +676,23 @@ namespace Stylus.Query
                                         }
                                         if (is_reverse_s[i])
                                         {
+                                            /////
+                                            if (StylusSchema.ForwardPids.Contains(pid))
+                                            {
+                                                continue;
+                                            }
+                                            /////
                                             long rev_pid = StylusSchema.InvPreds[pid];
                                             var_pred_match_list.Add(new KeyValuePair<long, List<long>>(rev_pid, list));
                                         }
                                         else
                                         {
+                                            /////
+                                            if (!StylusSchema.ForwardPids.Contains(pid))
+                                            {
+                                                continue;
+                                            }
+                                            /////
                                             var_pred_match_list.Add(new KeyValuePair<long, List<long>>(pid, list));
                                         }
                                     }
@@ -810,6 +883,10 @@ namespace Stylus.Query
             {
                 ushort tid = tid_eids.Item1;
                 var eids = tid_eids.Item2;
+                if (eids == null || eids.Count == 0)
+                {
+                    return;
+                }
 
                 var tid_all_pids = StylusSchema.Tid2Pids[tid];
 
@@ -855,11 +932,23 @@ namespace Stylus.Query
                                     var oid_list = new List<long>() { oid };
                                     if (is_reverse_s[i])
                                     {
+                                        /////
+                                        if (StylusSchema.ForwardPids.Contains(orig_pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         long rev_pid = StylusSchema.InvPreds[orig_pid];
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(rev_pid, oid_list));
                                     }
                                     else
                                     {
+                                        /////
+                                        if (!StylusSchema.ForwardPids.Contains(orig_pid))
+                                        {
+                                            continue;
+                                        }
+                                        /////
                                         kvp_list.Add(new KeyValuePair<long, List<long>>(orig_pid, oid_list));
                                     }
                                 }
