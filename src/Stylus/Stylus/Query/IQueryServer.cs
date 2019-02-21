@@ -12,7 +12,9 @@ namespace Stylus.Query
     {
         IStorage Storage { set; get; }
 
-        XDictionary<string, long> LiteralToId { set; get; }
+        string GetLiteral(long eid);
+
+        long GetEid(string str);
 
         bool ContainsBinding(string variable);
 

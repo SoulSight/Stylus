@@ -88,7 +88,7 @@ namespace Stylus.Query
                 }
                 else
                 {
-                    bindings.Add(node_name, new UniEidBinding(LiteralToId[node_name]));
+                    bindings.Add(node_name, new UniEidBinding(GetEid(node_name)));
                 }
             }
 

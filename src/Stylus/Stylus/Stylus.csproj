@@ -84,6 +84,13 @@
   <ItemGroup>
     <Compile Include="Distributed\SparqlQueryCoordinator.cs" />
     <Compile Include="Distributed\SparqlDataServer.cs" />
+    <Compile Include="Literal\LangLiteralParser.cs" />
+    <Compile Include="Literal\Literal.cs" />
+    <Compile Include="Literal\LiteralParser.cs" />
+    <Compile Include="Literal\LiteralTool.cs" />
+    <Compile Include="Literal\NumberLiteralParser.cs" />
+    <Compile Include="Literal\RawLiteralParser.cs" />
+    <Compile Include="Literal\UriLiteralParser.cs" />
     <Compile Include="Loading\DataScanner.cs" />
     <Compile Include="Loading\LoadingEntity.cs" />
     <Compile Include="Query\BaseQueryServer.cs" />

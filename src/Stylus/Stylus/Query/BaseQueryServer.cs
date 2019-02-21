@@ -1,4 +1,5 @@
 ﻿using Stylus.DataModel;
+using Stylus.Literal;
 using Stylus.Storage;
 using Stylus.Util;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Trinity;
+using Trinity.TSL.Lib;
 
 namespace Stylus.Query
 {
@@ -20,37 +22,15 @@ namespace Stylus.Query
 
         public Statistics CardStatistics { set; get; }
 
-        public XDictionary<string, long> LiteralToId
-        {
-            set;
-            get;
-        }
-
-        protected Dictionary<uint, string[]> IdToLiteral;
-
         protected Dictionary<long, string> pid2pred = new Dictionary<long, string>();
 
         public BaseQueryServer()
         {
             this.Storage = RAMStorage.Singleton;
 
-            if (TrinityConfig.CurrentRunningMode == RunningMode.Embedded)
-            {
-                // Initialize: LiteralToEid & Statistics
-                LoadLiteralMapping();
-            }
-
             CardStatistics = RAMStorage.CardStatistics;
             InitPid2Pred();
             InitSchemaSynOid2Oid();
-        }
-
-        protected void AddLiteralMapEntry(string literal, long eid)
-        {
-            this.LiteralToId.Add(literal, eid);
-            ushort tid = TidUtil.GetTid(eid);
-            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
-            this.IdToLiteral[tid][index] = literal;
         }
 
         protected void InitPid2Pred()
@@ -67,34 +47,49 @@ namespace Stylus.Query
             foreach (var synoid in StylusSchema.SynpidPidOids.Select(t => t.Item3))
             {
                 string uri = this.pid2pred[synoid];
-                long oid = this.LiteralToId[uri];
+                long oid = GetEid(uri);
                 StylusSchema.SchemaSynOid2Oid.Add(synoid, oid);
             }
         }
 
-        protected string GetLiteral(long eid)
+        public string GetLiteral(long eid)
         {
             if (pid2pred.ContainsKey(eid)) // test predicate first
             {
                 return pid2pred[eid];
             }
-            ushort tid = TidUtil.GetTid(eid);
-            int index = (int)TidUtil.CloneMaskTid(eid) - 1;
-            return this.IdToLiteral[tid][index];
+
+            IndexEntry indexEntry = default(IndexEntry);
+            long eidIndexCellId = TidUtil.CloneMaskTid(eid, StylusConfig.LiteralTid);
+            using (var cell = Global.LocalStorage.UseHashIndex(eidIndexCellId, CellAccessOptions.ThrowExceptionOnCellNotFound))
+            {
+                cell.Entries.ForEach(entry =>
+                {
+                    if (entry.EntityCellId == eid)
+                    {
+                        indexEntry = entry;
+                    }
+                });
+            }
+            return LiteralTool.ToString(LiteralTool.FromIndexEntry(indexEntry, idx => StylusSchema.LiteralPrefixSuffixes[idx]));
         }
 
-        protected void LoadLiteralMapping()
+        public long GetEid(string str)
         {
-            // LoadLiteralToEid
-            this.LiteralToId = new XDictionary<string, long>(7);
-            this.IdToLiteral = new Dictionary<uint, string[]>();
-            foreach (var tid2count in StylusSchema.Tid2Count)
+            long ret = -1;
+            long strIndexCellId = TidUtil.CloneMaskTid(str.GetHashCode(), StylusConfig.LiteralTid);
+            using (var cell = Global.LocalStorage.UseHashIndex(strIndexCellId, CellAccessOptions.ThrowExceptionOnCellNotFound))
             {
-                IdToLiteral.Add(tid2count.Key, new string[(int)tid2count.Value]);
+                cell.Entries.ForEach(entry =>
+                {
+                    var literal = LiteralTool.FromIndexEntry(entry, idx => StylusSchema.LiteralPrefixSuffixes[idx]);
+                    if (LiteralTool.ToString(literal) == str)
+                    {
+                        ret = entry.EntityCellId;
+                    }
+                });
             }
-
-            // IOUtil.LoadEidMapFile((literal, eid) => this.LiteralToId.Add(literal, eid));
-            IOUtil.LoadEidMapFile((literal, eid) => AddLiteralMapEntry(literal, eid));
+            return ret;
         }
 
         #region Triple Server
@@ -121,7 +116,7 @@ namespace Stylus.Query
 
         public List<string> GetPreds(string entity)
         {
-            long eid = LiteralToId[entity];
+            long eid = GetEid(entity);
             return GetPreds(eid);
         }
 
@@ -137,7 +132,7 @@ namespace Stylus.Query
 
         public List<string> GetObjs(string subj, string pred)
         {
-            long eid = LiteralToId[subj];
+            long eid = GetEid(subj);
             long pid = StylusSchema.Pred2Pid[pred];
             return GetObjs(eid, pid);
         }
@@ -150,7 +145,7 @@ namespace Stylus.Query
 
         public List<string> GetSubjs(string pred, string obj)
         {
-            long oid = LiteralToId[obj];
+            long oid = GetEid(obj);
             long pid = StylusSchema.Pred2Pid[pred];
             return GetSids(pid, oid).Select(sid => GetLiteral(sid)).ToList();
         }

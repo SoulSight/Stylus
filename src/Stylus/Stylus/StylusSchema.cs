@@ -9,35 +9,38 @@ using Trinity;
 using Trinity.TSL.Lib;
 using Trinity.Diagnostics;
 
-using Stylus.DataModel;
 using Stylus.Util;
+using Stylus.DataModel;
 
 namespace Stylus
 {
     public class StylusSchema
     {
-        public static Dictionary<ushort, List<long>> Tid2Pids = new Dictionary<ushort, List<long>>();
-        public static Dictionary<string, long> Pred2Pid = new Dictionary<string, long>();
-        public static Dictionary<ushort, double> Tid2Count = new Dictionary<ushort, double>();
+        internal static Dictionary<ushort, List<long>> Tid2Pids { set; get; } = new Dictionary<ushort, List<long>>();
+        internal static Dictionary<string, long> Pred2Pid { set; get; } = new Dictionary<string, long>();
+        internal static Dictionary<ushort, double> Tid2Count { set; get; } = new Dictionary<ushort, double>();
 
-        public static Dictionary<ushort, Dictionary<long, int>> TidPid2Index = new Dictionary<ushort, Dictionary<long, int>>();
-        public static Dictionary<long, Dictionary<ushort, int>> PidTid2Index = new Dictionary<long, Dictionary<ushort, int>>();
-        public static HashSet<long> GenericInclusivePids = new HashSet<long>();
-        public static HashSet<long> ForwardPids = new HashSet<long>();
+        internal static Dictionary<ushort, Dictionary<long, int>> TidPid2Index { set; get; } = new Dictionary<ushort, Dictionary<long, int>>();
+        internal static Dictionary<long, Dictionary<ushort, int>> PidTid2Index { set; get; } = new Dictionary<long, Dictionary<ushort, int>>();
+        internal static HashSet<long> GenericInclusivePids { set; get; } = new HashSet<long>();
+        internal static HashSet<long> ForwardPids { set; get; } = new HashSet<long>();
 
-        public static Dictionary<long, long> InvPreds = new Dictionary<long, long>();
+        internal static Dictionary<long, long> InvPreds { set; get; } = new Dictionary<long, long>();
 
-        public static List<Tuple<long, long, long>> SynpidPidOids = new List<Tuple<long, long, long>>();
+        internal static List<Tuple<long, long, long>> SynpidPidOids { set; get; } = new List<Tuple<long, long, long>>();
 
-        public static Dictionary<long, Tuple<long, long>> Synpid2PidOid = new Dictionary<long, Tuple<long, long>>();
-        public static Dictionary<Tuple<long, long>, long> PidOid2Synpid = new Dictionary<Tuple<long, long>, long>();
+        internal static Dictionary<long, Tuple<long, long>> Synpid2PidOid { set; get; } = new Dictionary<long, Tuple<long, long>>();
+        internal static Dictionary<Tuple<long, long>, long> PidOid2Synpid { set; get; } = new Dictionary<Tuple<long, long>, long>();
         //[rdf:type] => [rdf:type Person], [rdf:type Film]
-        public static Dictionary<long, HashSet<long>> Pid2Synpids = new Dictionary<long, HashSet<long>>();
+        internal static Dictionary<long, HashSet<long>> Pid2Synpids { set; get; } = new Dictionary<long, HashSet<long>>();
 
-        // public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>() { Vocab.RdfType };
-        public static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds
+        //public static HashSet<string> PredCandidatesForSynPred { set; get; } = new HashSet<string>() { Vocab.RdfType };
+        internal static HashSet<string> PredCandidatesForSynPred = new HashSet<string>(); // no synthetic preds
 
-        public static Dictionary<long, long> SchemaSynOid2Oid = new Dictionary<long, long>();
+        internal static Dictionary<long, long> SchemaSynOid2Oid { set; get; } = new Dictionary<long, long>();
+
+        internal static List<string> LiteralPrefixSuffixes { set; get; } = new List<string>();
+        internal static Dictionary<string, int> LiteralPrefixSuffix2Index { set; get; } = new Dictionary<string, int>();
 
         public static object Locker = new object();
 
@@ -113,6 +116,16 @@ namespace Stylus
             }
         }
 
+        internal static void RefreshPrefixSuffixIndex()
+        {
+            LiteralPrefixSuffix2Index.Clear();
+
+            for (int i = 0; i < LiteralPrefixSuffixes.Count; i++)
+            {
+                LiteralPrefixSuffix2Index.Add(LiteralPrefixSuffixes[i], i);
+            }
+        }
+        
         internal static void Clear() 
         {
             Tid2Pids.Clear();
@@ -129,9 +142,11 @@ namespace Stylus
             PidOid2Synpid.Clear();
 
             Pid2Synpids.Clear();
+
+            LiteralPrefixSuffixes.Clear(); 
         }
 
-        public static void LoadFromFile() 
+        public static void LoadUdtFromFile() 
         {
             Clear();
 
@@ -171,6 +186,17 @@ namespace Stylus
             Tid2Count.Add(StylusConfig.GenericTid, generic_tid_count);
             RefreshTPIndex();
 
+            string prefixSuffixFilename = StylusConfig.GetStoreMetaRootDir() + StylusConfig.LiteralPrefixSuffixFilename;
+            if (!File.Exists(prefixSuffixFilename))
+            {
+                Console.WriteLine("File {0} does not exists, skip it.", prefixSuffixFilename);
+            }
+            else
+            {
+                LiteralPrefixSuffixes = File.ReadLines(prefixSuffixFilename).ToList();
+                RefreshPrefixSuffixIndex();
+            }
+
             LoadPredInfo();
 
             RefreshForwardPids();
@@ -200,6 +226,13 @@ namespace Stylus
                     SynpidPidOids.Add(Tuple.Create(syn_p.SynP, syn_p.P, syn_p.O));
                 }
                 RefreshSynPIndex();
+
+                
+                foreach (var prefix in accessor.Prefixes)
+                {
+                    LiteralPrefixSuffixes.Add(prefix.ToString());
+                }
+                RefreshPrefixSuffixIndex();
             }
 
             LoadPredInfo();
@@ -273,7 +306,7 @@ namespace Stylus
                 synpreds.Add(sp);
             }
 
-            var schema = new xUDTSchema(StylusConfig.SchemaCell, xudts, inv_preds, synpreds);
+            var schema = new xUDTSchema(StylusConfig.SchemaCell, xudts, inv_preds, synpreds, LiteralPrefixSuffixes);
             Global.LocalStorage.SavexUDTSchema(schema);
         }
         #endregion
@@ -351,7 +384,7 @@ namespace Stylus
         #region Generate Schema
         private static long cur_p_encoding = 0;
 
-        public static long GetOrAddPid(string pred)
+        internal static long GetOrAddPid(string pred)
         {
             long encoding;
             if (Pred2Pid.TryGetValue(pred, out encoding))
@@ -410,12 +443,12 @@ namespace Stylus
             return pred_obj;
         }
 
-        public static string ConcatSynPred(string pred, string obj) 
+        internal static string ConcatSynPred(string pred, string obj) 
         {
             return pred + " " + obj;
         }
 
-        public static bool IsSynPred(string pred, string obj) 
+        internal static bool IsSynPred(string pred, string obj) 
         {
             return Pred2Pid.ContainsKey(ConcatSynPred(pred, obj));
         }

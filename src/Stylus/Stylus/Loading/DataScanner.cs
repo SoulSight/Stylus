@@ -9,6 +9,10 @@ using Trinity;
 using Trinity.Diagnostics;
 
 using Stylus.Util;
+using System.Runtime.ExceptionServices;
+using Trinity.TSL.Lib;
+using Stylus.Literal;
+
 using Stylus.DataModel;
 
 namespace Stylus.Loading
@@ -17,11 +21,25 @@ namespace Stylus.Loading
     {
         private static Dictionary<string, ushort> plist_tid_dict = new Dictionary<string, ushort>();
         private static XDictionary<string, long> literal_to_eid = new XDictionary<string, long>(17);
+        // private static BTree.BTreeDictionary<string, long> literal_to_eid = new BTree.BTreeDictionary<string, long>();
         private static Dictionary<ushort, long> tid_cur_pos = new Dictionary<ushort, long>();
+        private static int cur_prefix_suffix_id = -1;
+        private static Dictionary<string, int> prefix_suffix_id_mapping = new Dictionary<string, int>();
+
+        private static int GetOrAddPrefixSuffix(string prefix_suffix)
+        {
+            if (prefix_suffix_id_mapping.TryGetValue(prefix_suffix, out int id))
+            {
+                return id;
+            }
+            cur_prefix_suffix_id++;
+            prefix_suffix_id_mapping.Add(prefix_suffix, cur_prefix_suffix_id);
+            return cur_prefix_suffix_id;
+        }
 
         public static void LoadSchemaFromFile()
         {
-            StylusSchema.LoadFromFile();
+            StylusSchema.LoadUdtFromFile();
 
             plist_tid_dict.Clear();
             foreach (var kvp in StylusSchema.Tid2Pids)
@@ -33,16 +51,51 @@ namespace Stylus.Loading
 
         private static void LoadIdMappingFromFile()
         {
-            IOUtil.LoadEidMapFile((literal, eid) => literal_to_eid.Add(literal, eid));
+            IOUtil.LoadEidMapFile((str, eid) => 
+            {
+                str = str.Trim();
+                literal_to_eid.Add(str, eid);
+                var literal = LiteralTool.Parse(str);
+                // Console.WriteLine(literal); // DEBUG
+                var indexEntry = LiteralTool.ToIndexEntry(literal, eid, GetOrAddPrefixSuffix);
+                var hashcode = str.GetHashCode();
+                long literalIndexCellId = TidUtil.CloneMaskTid(hashcode, StylusConfig.LiteralTid);
+                using (var cell = Global.LocalStorage.UseHashIndex(literalIndexCellId, CellAccessOptions.CreateNewOnCellNotFound))
+                {
+                    cell.Entries.Add(indexEntry);
+                }
+                long eidIndexCellId = TidUtil.CloneMaskTid(eid, StylusConfig.LiteralTid);
+                using (var cell = Global.LocalStorage.UseHashIndex(eidIndexCellId, CellAccessOptions.CreateNewOnCellNotFound))
+                {
+                    cell.Entries.Add(indexEntry);
+                }
+            });
+
+            using (var writer = new StreamWriter(StylusConfig.GetStoreMetaRootDir() + StylusConfig.LiteralPrefixSuffixFilename))
+            {
+                foreach (var str in prefix_suffix_id_mapping.OrderBy(p => p.Value).Select(p => p.Key))
+                {
+                    writer.WriteLine(str);
+                }
+            }
+
+            StylusSchema.LiteralPrefixSuffixes = File.ReadLines(StylusConfig.GetStoreMetaRootDir() + StylusConfig.LiteralPrefixSuffixFilename).ToList();
+            StylusSchema.RefreshPrefixSuffixIndex();
         }
 
         private static ushort GetTid(List<long> pids)
         {
             pids.Sort();
             string plist_str = string.Join(" ", pids);
-            ushort tid = StylusConfig.GenericTid;
-            plist_tid_dict.TryGetValue(plist_str, out tid);
-            return tid;
+
+            if (plist_tid_dict.TryGetValue(plist_str, out ushort tid))
+            {
+                return tid;
+            }
+            else
+            {
+                return StylusConfig.GenericTid;
+            }
         }
 
         private static IEnumerable<EncodedLoadingEntity> EnumerateEncodedEntity(string filename, char sep) 
@@ -93,9 +146,15 @@ namespace Stylus.Loading
             {
                 if (++cnt % 1000000 == 0)
                 {
-                    Console.WriteLine("EnumerateEntity: " + cnt);
+                    Console.WriteLine("EnumerateEntity | Lines: " + cnt);
                 }
+
                 string[] splits = NTripleUtil.FastSplit(line); //line.Split(sep);
+                if (splits.Length < 3)
+                {
+                    Console.WriteLine("Warning: " + line);
+                    continue;
+                }
                 if (splits[0] != pre && pre != "")
                 {
                     yield return new LoadingEntity() { Literal = pre, POs = pos };
@@ -120,7 +179,7 @@ namespace Stylus.Loading
                 }
                 pos[pid].Add(splits[2]);
             }
-            Console.WriteLine("EnumerateEntity: " + cnt);
+            Console.WriteLine("EnumerateEntity | Lines: " + cnt);
             yield return new LoadingEntity() { Literal = pre, POs = pos };
         }
 
@@ -147,6 +206,12 @@ namespace Stylus.Loading
         private static void LoadEntity(LoadingEntity entity)
         {
             Dictionary<long, List<long>> pid_oids_dict = new Dictionary<long, List<long>>();
+            if (!literal_to_eid.ContainsKey(entity.Literal))
+            {
+                Log.WriteLine(LogLevel.Error, "Key not found: {0}", entity.Literal);
+                return;
+            }
+
             long eid = literal_to_eid[entity.Literal];
 
             if (!ClusterUtil.IsLocalEntity(eid))
@@ -156,7 +221,8 @@ namespace Stylus.Loading
 
             foreach (var kvp in entity.POs)
             {
-                List<long> oids = kvp.Value.Select(o => literal_to_eid[o]).ToList();
+                List<long> oids = kvp.Value.Where(o => literal_to_eid.ContainsKey(o))
+                    .Select(o => literal_to_eid[o]).ToList();
                 TidUtil.SortByTid(oids);
                 pid_oids_dict.Add(kvp.Key, oids);
             }
@@ -177,7 +243,7 @@ namespace Stylus.Loading
                 }
 
                 xEntity xentity = new xEntity(eid, tid, offsets, obj_vals);
-                Global.LocalStorage.SavexEntity(xentity);
+                Global.LocalStorage.SavexEntity(eid, xentity);
             }
             else
             {
@@ -189,7 +255,7 @@ namespace Stylus.Loading
                 }
 
                 GenericPropEntity gpe = new GenericPropEntity(eid, tid, props);
-                Global.LocalStorage.SaveGenericPropEntity(gpe);
+                Global.LocalStorage.SaveGenericPropEntity(eid, gpe);
             }
         }
 
@@ -285,31 +351,35 @@ namespace Stylus.Loading
             Console.WriteLine("Encoded: " + cnt);
         }
 
+        //[HandleProcessCorruptedStateExceptions]
         public static void LoadFile(string rdfFilename, char sep = ' ')
         {
-            Log.WriteLine(LogLevel.Info, "Load Schema From File...");
-            LoadSchemaFromFile();
-            StylusSchema.SaveToStorage();
-
             if (literal_to_eid.Count == 0)
             {
                 Log.WriteLine(LogLevel.Info, "Load Id Mapping From File...");
                 LoadIdMappingFromFile();
             }
 
+            Log.WriteLine(LogLevel.Info, "Load Schema From File...");
+            LoadSchemaFromFile();
+
+
             Log.WriteLine(LogLevel.Info, "Load Entity...");
 
             ////Linear loading
-            //foreach (var xentity in EnumerateEntity(rdfFilename, sep))
-            //{
-            //    LoadEntity(xentity);
-            //}
-
-            ////Parallel loading
-            Parallel.ForEach(EnumerateEntity(rdfFilename, sep), xentity =>
+            foreach (var xentity in EnumerateEntity(rdfFilename, sep))
             {
                 LoadEntity(xentity);
-            });
+            }
+
+            ////Parallel loading
+            //Parallel.ForEach(EnumerateEntity(rdfFilename, sep), xentity =>
+            //{
+            //    LoadEntity(xentity);
+            //});
+
+            Log.WriteLine(LogLevel.Info, "Save Schema To Storage...");
+            StylusSchema.SaveToStorage();
 
             Log.WriteLine(LogLevel.Info, "Totol Cell Count: " + Global.LocalStorage.CellCount);
             Global.LocalStorage.SaveStorage();
@@ -338,9 +408,9 @@ namespace Stylus.Loading
             Global.LocalStorage.SaveStorage();
         }
 
-        public static void GenStatFromEncodedFile(string encodedFilename, string statisticsFilename, char sep = ' ') 
+        public static void GenStatFromEncodedFile(string encodedFilename, string statisticsFilename, char sep = ' ')
         {
-            Dictionary<ushort, Dictionary<long, double>> tid2pid2sel 
+            Dictionary<ushort, Dictionary<long, double>> tid2pid2sel
                 = new Dictionary<ushort, Dictionary<long, double>>();
 
             Dictionary<ushort, double> tid2count = new Dictionary<ushort, double>();
@@ -382,7 +452,7 @@ namespace Stylus.Loading
                 {
                     ushort tid = kvp.Key;
                     double tid_cnt = tid2count[tid];
-                    tid2pid2sel.Add(tid, new Dictionary<long,double>());
+                    tid2pid2sel.Add(tid, new Dictionary<long, double>());
                     foreach (var pos in kvp.Value)
                     {
                         double sel = (double)pos.Value.Count / tid_cnt;
@@ -398,6 +468,7 @@ namespace Stylus.Loading
             plist_tid_dict.Clear();
             literal_to_eid.Clear();
             tid_cur_pos.Clear();
+            prefix_suffix_id_mapping.Clear();
         }
     }
 }

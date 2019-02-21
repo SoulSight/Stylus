@@ -27,7 +27,7 @@ namespace Stylus.Distributed
 
         public SparqlQueryCoordinator() 
         {
-            StylusSchema.LoadFromFile();
+            StylusSchema.LoadUdtFromFile();
             // this.statistics = new Statistics();
             LoadLiteralMapping();
         }

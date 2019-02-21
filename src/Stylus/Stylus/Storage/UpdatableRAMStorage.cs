@@ -131,7 +131,7 @@ namespace Stylus.Storage
             }
             else
             {
-                StylusSchema.LoadFromFile();
+                StylusSchema.LoadUdtFromFile();
             }
         }
 

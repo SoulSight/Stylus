@@ -188,7 +188,7 @@ namespace Stylus.Console
                                 {
                                     System.Console.WriteLine("<bool> param is required for 'set " + StylusConsoleTerm.CombineIsAName + "'.");
                                 }
-                                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusConfig.CombineIsA);
                                 break;
                             case StylusConsoleTerm.MaxXUDTName:
                                 int max_xudt;
@@ -235,7 +235,7 @@ namespace Stylus.Console
                                 System.Console.WriteLine("=> " + StylusConsoleTerm.StorageRootName + ": " + TrinityConfig.StorageRoot);
                                 break;
                             case StylusConsoleTerm.CombineIsAName:
-                                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusSchema.PredCandidatesForSynPred.Contains(Vocab.RdfType));
+                                System.Console.WriteLine("=> " + StylusConsoleTerm.CombineIsAName + ": " + StylusConfig.CombineIsA);
                                 break;
                             case StylusConsoleTerm.MaxXUDTName:
                                 System.Console.WriteLine("=> " + StylusConsoleTerm.MaxXUDTName + ": " + StylusConfig.MaxXudt);

@@ -24,6 +24,7 @@ cell struct xUDTSchema
 	List<xUDT> xUDTs;
 	List<InvertPred> InvertPreds;
 	List<SyntheticPred> SyntheticPreds;
+	List<u8string> Prefixes;
 }
 
 cell struct xEntity
@@ -59,3 +60,18 @@ cell struct GenericPOEntity
 	List<PO> POs;
 }
 
+// ---------------------------------
+
+struct IndexEntry
+{
+    long EntityCellId;
+	int LiteralType;
+	int PrefixSuffixId;
+    u8string EntryKey;
+}
+
+// ---------Hash Index Impl---------
+cell struct HashIndex
+{
+	List<IndexEntry> Entries;
+}
